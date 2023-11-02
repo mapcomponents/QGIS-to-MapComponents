@@ -1,0 +1,1 @@
+![QGIS-MapComponentizer](cover.webp)
