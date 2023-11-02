@@ -8,7 +8,7 @@ project = QgsProject.instance()
 # print(project.fileName())
 
 # Load external project
-project.read('test/test1.qgs')
+project.read('testdata/test1.qgs')
 
 # list of layer names using list comprehension
 l = [layer.name() for layer in project.mapLayers().values()]
