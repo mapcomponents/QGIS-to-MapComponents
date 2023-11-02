@@ -24,8 +24,8 @@ for l in layers_list:
         print(layers_list[l].type())
         if layers_list[l].type() == QgsMapLayerType.VectorLayer:
             crs = QgsCoordinateReferenceSystem('EPSG:4326')
-            reprojected_path = './testdata/test_reprojected.shp'
-            QgsVectorFileWriter.writeAsVectorFormat(layers_list[l], reprojected_path, 'UTF-8', crs, 'ESRI Shapefile')
+            reprojected_path = './testdata/test_reprojected.gpkg'
+            QgsVectorFileWriter.writeAsVectorFormat(layers_list[l], reprojected_path, 'UTF-8', crs, 'GPKG')
 
             exporter = QgsJsonExporter(layers_list[l])
             features = layers_list[l].getFeatures()
@@ -40,7 +40,3 @@ l = [layer.name() for layer in project.mapLayers().values()]
 
 for l in project.mapLayers().values():
   new_layer_list [l.name()] = l
-
-# Print CRS of reprojected layers
-#for layer_name, layer in new_layer_list.items():
-    #print(f'{layer_name} - CRS: {layer.crs().authid()}')
