@@ -40,9 +40,10 @@ new_layers_list = {}
 for l in project.mapLayers().values():
   new_layers_list[l.name()] = l
 
-# the new list is looped and the vector layer with supported geomtrie exported as geojson:
+
 for l in new_layers_list: 
   thisLayer = new_layers_list[l]
+# the new list is looped and the vector layer with supported geomtrie exported as geojson:  
   if thisLayer.type() == QgsMapLayerType.VectorLayer:
     if thisLayer.crs().authid() == 'EPSG:4326':
       
@@ -53,30 +54,24 @@ for l in new_layers_list:
         file = open(f'./output/{name}.json', 'w')
         file.write(geojson)    
   
+  # read wms layer infos and export them as a json object: 
   elif thisLayer.type() == QgsMapLayerType.RasterLayer:
    
     source = thisLayer.source()
     parsedUrl = urlparse('http://domain.de/?' + source)
     url_parameters = parse_qs(parsedUrl.query)
 
-    print(url_parameters)
+    new_url_parameters = {key: value[0] for key, value in url_parameters.items()}
+ 
     name = thisLayer.name()
     layers = []
+    
+    # recover the original layers list from th url:
     if 'layers' in  url_parameters: 
       for layer in url_parameters['layers'] :
        layers.append({'visible': True , name: layer})
+       new_url_parameters['layers'] = layers
 
-    data = {'layerType': 'wms', 'wmsUrl': url_parameters['url'][0][0], 'layers': layers, 'crs': url_parameters['crs'][0]}
-    if 'type' in  url_parameters: 
-    
-      data['type'] = url_parameters['type'][0]
-
-    if 'zmin' in  url_parameters: 
-     data['minZoom'] = url_parameters['zmin'][0]
-
-    if 'zmax' in  url_parameters: 
-     data['maxZoom'] = url_parameters['zmax'][0]
-
-    json_string = json.dumps(url_parameters)
+    json_string = json.dumps(new_url_parameters)
     with open(f'./output/{name}.json', 'w') as file:
       file.write(json_string) 
