@@ -1,6 +1,7 @@
 from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsProviderRegistry
 from qgis.core import QgsCoordinateReferenceSystem
 import json
+from urllib.parse import urlparse, parse_qs
 
 
 # Get the project instance
@@ -53,10 +54,29 @@ for l in new_layers_list:
         file.write(geojson)    
   
   elif thisLayer.type() == QgsMapLayerType.RasterLayer:
-    print(f"hi there, im {thisLayer.name()}, a {thisLayer.type()} Layer") 
+   
     source = thisLayer.source()
+    parsedUrl = urlparse('http://domain.de/?' + source)
+    url_parameters = parse_qs(parsedUrl.query)
+
+    print(url_parameters)
     name = thisLayer.name()
-    data = {'source': source, 'type': 'wms'}
-    json_string = json.dumps(data)
+    layers = []
+    if 'layers' in  url_parameters: 
+      for layer in url_parameters['layers'] :
+       layers.append({'visible': True , name: layer})
+
+    data = {'layerType': 'wms', 'wmsUrl': url_parameters['url'][0][0], 'layers': layers, 'crs': url_parameters['crs'][0]}
+    if 'type' in  url_parameters: 
+    
+      data['type'] = url_parameters['type'][0]
+
+    if 'zmin' in  url_parameters: 
+     data['minZoom'] = url_parameters['zmin'][0]
+
+    if 'zmax' in  url_parameters: 
+     data['maxZoom'] = url_parameters['zmax'][0]
+
+    json_string = json.dumps(url_parameters)
     with open(f'./output/{name}.json', 'w') as file:
       file.write(json_string) 
