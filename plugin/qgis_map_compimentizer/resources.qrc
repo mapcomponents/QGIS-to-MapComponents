@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/qgis_map_compimentizer" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
