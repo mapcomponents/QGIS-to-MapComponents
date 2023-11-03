@@ -9,3 +9,4 @@
 *.gpkg-shm
 *.gpkg-wal
 *.qgs~
+*_reprojected.gpkg
