@@ -6,4 +6,6 @@
 *shx
 *cpg
 
-test_reprojected.gpkg
+*.gpkg-shm
+*.gpkg-wal
+*.qgs~
