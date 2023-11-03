@@ -25,12 +25,12 @@ for l in layers_list:
  
         if layers_list[l].type() == QgsMapLayerType.VectorLayer:
             crs = QgsCoordinateReferenceSystem('EPSG:4326')
-            reprojected_path = './testdata/test_reprojected.gpkg'
+            reprojected_path = f'./testdata/{layers_list[l].name()}_reprojected.gpkg'
             QgsVectorFileWriter.writeAsVectorFormat(layers_list[l], reprojected_path, 'UTF-8', crs, 'GPKG')
 
            # Load the reprojected layer back into the project
             reprojected_layer = QgsVectorLayer(reprojected_path, f'{layers_list[l].name()}_reprojected', 'ogr')
-            QgsProject.instance().addMapLayer(reprojected_layer)
+            project.addMapLayer(reprojected_layer)
 
 
 new_layers_list = {}
@@ -40,18 +40,13 @@ for l in project.mapLayers().values():
 for l in new_layers_list: 
   
    if new_layers_list[l].type() == QgsMapLayerType.VectorLayer:
-      print (new_layers_list[l].type())
+     if new_layers_list[l].crs().authid() == 'EPSG:4326':
+        print (new_layers_list[l].type())
 
-      exporter = QgsJsonExporter(new_layers_list[l])
-      features = new_layers_list[l].getFeatures()
-      json = exporter.exportFeatures(features)
-      name = new_layers_list[l].name()
-      file = open(f'./output/{name}.json', 'w')
-      file.write(json)
-            
-# new_layer_list = {}
-# l = [layer.name() for layer in project.mapLayers().values()]
-# # dictionary with key = layer name and value = layer object
-
-# for l in project.mapLayers().values():
-#   new_layer_list [l.name()] = l
+        exporter = QgsJsonExporter(new_layers_list[l])
+        features = new_layers_list[l].getFeatures()
+        json = exporter.exportFeatures(features)
+        name = new_layers_list[l].name()
+        file = open(f'./output/{name}.json', 'w')
+        file.write(json)
+           
