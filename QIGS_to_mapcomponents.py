@@ -38,6 +38,11 @@ for l in layers_list:
             reprojected_layer = QgsVectorLayer(reprojected_path, layers_list[l].name(), 'ogr')
             QgsProject.instance().addMapLayer(reprojected_layer)
 
+            # newList = {}
+            # for l in project.mapLayers().values():
+            #     newList[l.name()]= l
+
+            # print(newList)
             exporter = QgsJsonExporter(layers_list[l])
             features = layers_list[l].getFeatures()
             json = exporter.exportFeatures(features)
