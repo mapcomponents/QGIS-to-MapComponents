@@ -5,3 +5,7 @@
 *prj
 *shx
 *cpg
+
+*.gpkg-shm
+*.gpkg-wal
+*.qgs~
