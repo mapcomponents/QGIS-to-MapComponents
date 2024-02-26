@@ -1,6 +1,7 @@
 import os
 import subprocess
-import webbrowser
+from subprocess import PIPE, Popen
+
 from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter
 from qgis.core import QgsCoordinateReferenceSystem
 import json
@@ -13,27 +14,42 @@ class MapComponentizer():
     temp_directory = './temp'
 
     def main(self):
-        
+
         # Get the project instance
         project = QgsProject.instance()
 
         # Print the current project file name (might be empty in case no projects have been loaded)
-        #print(project.fileName())
-         
+        # print(project.fileName())
+
         # Load test project
         project.read('testdata/testProject.qgs')
         projectName = project.baseName()
 
-        outputFolder = self.create_project_directory(projectName)
+        projectFolder, exportFolder = self.create_project_directory(projectName)
 
         self.reproject_layers(project)
-        self.export_layers(project, outputFolder)
+        self.export_layers(project, exportFolder)
 
-        workingPath = os.path.dirname(os.path.realpath(__file__))
-        subprocess.run(['npx', 'degit', 'mapcomponents/template', projectName], cwd=outputFolder)
-        subprocess.run(['yarn'], cwd=f'{outputFolder}/{projectName}')
-        subprocess.run(['yarn', 'dev'], cwd=f'{outputFolder}/{projectName}')
-        webbrowser.open("http://localhost:5173", new=2)
+        webAppName = projectName + '_mapComponents'
+
+        subprocess.run(['npx', 'degit', 'mapcomponents/template',
+                       webAppName], cwd=projectFolder)
+        subprocess.run(['mv', 'exported', webAppName], cwd=f'{projectFolder}')
+
+        #Start dev Server in the new app       
+        
+        install = Popen(['yarn'], stdin=PIPE, stderr=PIPE, stdout=PIPE, cwd=f'{projectFolder}/{webAppName}')
+        install.wait() 
+
+        Popen(['yarn', 'dev'], stdin=PIPE, stderr=PIPE, stdout=PIPE, cwd=f'{projectFolder}/{webAppName}')
+      
+        # open dev server in the browser
+        url = "http://localhost:5173/"        
+        try:
+            subprocess.run(['xdg-open', url], check=True)            
+        except subprocess.CalledProcessError as e:
+            print(f"Error: {e}")
+        
 
     def reproject_layers(self, project: QgsProject):
 
@@ -117,8 +133,20 @@ class MapComponentizer():
             # Create the project directory
         os.mkdir(directory)
         print(f'Directory "{directory}" created successfully.')
+        exportFolder = directory + "/exported"
+        os.mkdir(exportFolder)
+        
 
-        return directory
+        return directory, exportFolder
+    
+
+    def run_command(self, command):
+        
+        try:
+            subprocess.run(command, check=True, shell=True)
+            return f"Command '{command}' executed successfully."
+        except subprocess.CalledProcessError as e:
+            return f"Error executing command '{command}': {e}"
 
 
 map_componentizer = MapComponentizer()
