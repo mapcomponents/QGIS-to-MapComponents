@@ -1,5 +1,5 @@
 import os
-from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsProviderRegistry
+from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter
 from qgis.core import QgsCoordinateReferenceSystem
 import json
 from urllib.parse import urlparse, parse_qs
@@ -8,23 +8,7 @@ from urllib.parse import urlparse, parse_qs
 
 class MapComponentizer():
 
-  def create_project_directory(self, project_name):
-    base_directory = './output'
-    directory = f'{base_directory}/{project_name}'
-    
-    # If the directory already exists, append a number to the project name
-    counter = 1
-    while os.path.exists(directory):
-        project_name_with_counter = f'{project_name}_{counter}'
-        directory = f'{base_directory}/{project_name_with_counter}'
-        counter += 1
-    
-    # Create the project directory
-    os.mkdir(directory)
-    print(f'Directory "{directory}" created successfully.')
-
-    return directory
-  
+ 
   def main(self):
 
     # Get the project instance
@@ -37,6 +21,14 @@ class MapComponentizer():
     projectName = project.baseName()
 
     outputFolder = self.create_project_directory(projectName)
+
+    self.reproject_layers(project)
+    self.export_layers(project, outputFolder)
+
+
+  
+
+  def reproject_layers(self, project: QgsProject):
 
     # list of layer names using list comprehension
     l = [layer.name() for layer in project.mapLayers().values()]
@@ -60,7 +52,7 @@ class MapComponentizer():
               # Load the reprojected layer back into the project
                 reprojected_layer = QgsVectorLayer(reprojected_path, f'{layers_list[l].name()}_reprojected', 'ogr')
                 project.addMapLayer(reprojected_layer)
-
+  def export_layers(self, project: QgsProject, outputFolder: str):
     # A new list is created, including the new reprojected layers:
     new_layers_list = {}
     for l in project.mapLayers().values():
@@ -101,6 +93,24 @@ class MapComponentizer():
         json_string = json.dumps(new_url_parameters)
         with open(f'{outputFolder}/{name}.json', 'w') as file:
           file.write(json_string) 
+
+  def create_project_directory(self, project_name):
+    base_directory = './output'
+    directory = f'{base_directory}/{project_name}'
+     
+      # If the directory already exists, append a number to the project name
+    counter = 1
+    while os.path.exists(directory):
+      project_name_with_counter = f'{project_name}_{counter}'
+      directory = f'{base_directory}/{project_name_with_counter}'
+      counter += 1
+      
+      # Create the project directory
+    os.mkdir(directory)
+    print(f'Directory "{directory}" created successfully.')
+
+    return directory
+
 
 map_componentizer = MapComponentizer()
 map_componentizer.main()
