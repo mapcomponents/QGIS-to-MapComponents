@@ -1,6 +1,7 @@
 import os
 import subprocess
 from subprocess import PIPE, Popen
+import shutil
 
 from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter
 from qgis.core import QgsCoordinateReferenceSystem
@@ -12,6 +13,7 @@ class MapComponentizer():
 
     base_directory = './output'
     temp_directory = './temp'
+    templatePath = './templates/MapComponentizer'
 
     def main(self):
 
@@ -31,24 +33,27 @@ class MapComponentizer():
         self.export_layers(project, exportFolder)
 
         webAppName = projectName + '_mapComponents'
-
-        subprocess.run(['npx', 'degit', 'mapcomponents/template',
-                       webAppName], cwd=projectFolder)
+        os.mkdir(f'{projectFolder}/{webAppName}')
+        #subprocess.run(['npx', 'degit', 'mapcomponents/template', webAppName], cwd=projectFolder)
+        #subprocess.run(['cp', '-r', , f'{projectFolder}/{webAppName}'])
+        shutil.copytree(self.templatePath, f'{projectFolder}/{webAppName}', dirs_exist_ok=True)
         subprocess.run(['mv', 'exported', webAppName], cwd=f'{projectFolder}')
 
         #Start dev Server in the new app       
         
-        install = Popen(['yarn'], stdin=PIPE, stderr=PIPE, stdout=PIPE, cwd=f'{projectFolder}/{webAppName}')
-        install.wait() 
-
-        Popen(['yarn', 'dev'], stdin=PIPE, stderr=PIPE, stdout=PIPE, cwd=f'{projectFolder}/{webAppName}')
-      
+        subprocess.run(['yarn'], cwd=f'{projectFolder}/{webAppName}')
+        #install.wait() 
+        
         # open dev server in the browser
         url = "http://localhost:5173/"        
         try:
             subprocess.run(['xdg-open', url], check=True)            
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")
+        
+        subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}/{webAppName}')
+      
+       
         
 
     def reproject_layers(self, project: QgsProject):
@@ -81,24 +86,29 @@ class MapComponentizer():
         # A new list is created, including the new reprojected layers:
         new_layers_list = {}
         for l in project.mapLayers().values():
-            new_layers_list[l.name()] = l
+            new_layers_list[l.name()] = l              
 
         for l in new_layers_list:
             thisLayer = new_layers_list[l]
         # the new list is looped and the vector layer with supported geomtrie exported as geojson:
             if thisLayer.type() == QgsMapLayerType.VectorLayer:
                 if thisLayer.crs().authid() == 'EPSG:4326':
-
+                    geosjonFolder = f'{outputFolder}/geojson'
+                    if not os.path.isdir(geosjonFolder):
+                        os.mkdir(geosjonFolder)
+                    
                     exporter = QgsJsonExporter(thisLayer)
                     features = thisLayer.getFeatures()
                     geojson = exporter.exportFeatures(features)
                     name = thisLayer.name()
-                    file = open(f'{outputFolder}/{name}.json', 'w')
+                    file = open(f'{geosjonFolder}/{name}.json', 'w')
                     file.write(geojson)
 
             # read wms layer infos and export them as a json object:
             elif thisLayer.type() == QgsMapLayerType.RasterLayer:
-
+                wmsFolder = f'{outputFolder}/wms'
+                if not os.path.isdir(wmsFolder):
+                        os.mkdir(wmsFolder)
                 source = thisLayer.source()
                 parsedUrl = urlparse('http://domain.de/?' + source)
                 url_parameters = parse_qs(parsedUrl.query)
@@ -116,7 +126,7 @@ class MapComponentizer():
                     new_url_parameters['layers'] = layers
 
                 json_string = json.dumps(new_url_parameters)
-                with open(f'{outputFolder}/{name}.json', 'w') as file:
+                with open(f'{wmsFolder}/{name}.json', 'w') as file:
                     file.write(json_string)
 
     def create_project_directory(self, project_name):
@@ -130,7 +140,7 @@ class MapComponentizer():
             directory = f'{self.base_directory}/{project_name_with_counter}'
             counter += 1
 
-            # Create the project directory
+        # Create the project directory
         os.mkdir(directory)
         print(f'Directory "{directory}" created successfully.')
         exportFolder = directory + "/exported"
@@ -139,15 +149,6 @@ class MapComponentizer():
 
         return directory, exportFolder
     
-
-    def run_command(self, command):
-        
-        try:
-            subprocess.run(command, check=True, shell=True)
-            return f"Command '{command}' executed successfully."
-        except subprocess.CalledProcessError as e:
-            return f"Error executing command '{command}': {e}"
-
 
 map_componentizer = MapComponentizer()
 map_componentizer.main()
