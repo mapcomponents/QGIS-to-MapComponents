@@ -1,1 +1,0 @@
-{"crs": "EPSG:3857", "type": "xyz", "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png", "zmax": "19", "zmin": "0"}

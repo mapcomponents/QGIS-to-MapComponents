@@ -1,9 +1,14 @@
+###TODO:
+## create an index.json for each export folder (containing the nameof the files)
+
+
 import os
 import subprocess
 from subprocess import PIPE, Popen
 import shutil
-
-from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter
+   
+import json
+from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsMapLayer
 from qgis.core import QgsCoordinateReferenceSystem
 import json
 from urllib.parse import urlparse, parse_qs
@@ -12,7 +17,7 @@ from urllib.parse import urlparse, parse_qs
 class MapComponentizer():
 
     base_directory = './output'
-    temp_directory = './temp'
+    temp_directory = './tmp'
     templatePath = './templates/MapComponentizer'
 
     def main(self):
@@ -21,7 +26,7 @@ class MapComponentizer():
         project = QgsProject.instance()
 
         # Print the current project file name (might be empty in case no projects have been loaded)
-        # print(project.fileName())
+        print(project.fileName())
 
         # Load test project
         project.read('testdata/testProject.qgs')
@@ -35,7 +40,7 @@ class MapComponentizer():
         webAppName = projectName + '_mapComponents'
         os.mkdir(f'{projectFolder}/{webAppName}')
         #subprocess.run(['npx', 'degit', 'mapcomponents/template', webAppName], cwd=projectFolder)
-        #subprocess.run(['cp', '-r', , f'{projectFolder}/{webAppName}'])
+    
         shutil.copytree(self.templatePath, f'{projectFolder}/{webAppName}', dirs_exist_ok=True)
         subprocess.run(['mv', 'exported', webAppName], cwd=f'{projectFolder}')
 
@@ -50,6 +55,10 @@ class MapComponentizer():
             subprocess.run(['xdg-open', url], check=True)            
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")
+
+        project.clear()
+        shutil.rmtree(self.temp_directory)
+        os.mkdir(self.temp_directory)
         
         subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}/{webAppName}')
       
@@ -87,13 +96,17 @@ class MapComponentizer():
         new_layers_list = {}
         for l in project.mapLayers().values():
             new_layers_list[l.name()] = l              
+        vectorIndex = []
+        wmsIndex = []
+        wmsFolder = f'{outputFolder}/wms'
+        geosjonFolder = f'{outputFolder}/geojson'
 
         for l in new_layers_list:
-            thisLayer = new_layers_list[l]
-        # the new list is looped and the vector layer with supported geomtrie exported as geojson:
+            thisLayer: QgsMapLayer = new_layers_list[l]
+       
             if thisLayer.type() == QgsMapLayerType.VectorLayer:
+        # the new list is looped and the vector layer with supported geomtrie exported as geojson:
                 if thisLayer.crs().authid() == 'EPSG:4326':
-                    geosjonFolder = f'{outputFolder}/geojson'
                     if not os.path.isdir(geosjonFolder):
                         os.mkdir(geosjonFolder)
                     
@@ -101,12 +114,19 @@ class MapComponentizer():
                     features = thisLayer.getFeatures()
                     geojson = exporter.exportFeatures(features)
                     name = thisLayer.name()
+                    config = {"name": name,
+                              "visible": self.is_layer_visible(project, thisLayer),
+                              "type": self.getVectorLayerType(geojson),
+                              "geojson": json.loads(geojson)                                                    
+                              }
+                    
                     file = open(f'{geosjonFolder}/{name}.json', 'w')
-                    file.write(geojson)
-
-            # read wms layer infos and export them as a json object:
+                    file.write(json.dumps(config))
+                    vectorIndex.append(f'{name}.json')
+         
+       
             elif thisLayer.type() == QgsMapLayerType.RasterLayer:
-                wmsFolder = f'{outputFolder}/wms'
+         # read wms layer infos and export them as a json object:        
                 if not os.path.isdir(wmsFolder):
                         os.mkdir(wmsFolder)
                 source = thisLayer.source()
@@ -128,6 +148,15 @@ class MapComponentizer():
                 json_string = json.dumps(new_url_parameters)
                 with open(f'{wmsFolder}/{name}.json', 'w') as file:
                     file.write(json_string)
+                wmsIndex.append(f'{name}.json')
+
+        # export the index lists for each type of layer:
+        
+        with open(f'{wmsFolder}/index.json', 'w') as file:
+            file.write(json.dumps(wmsIndex))
+        with open(f'{geosjonFolder}/index.json', 'w') as file:
+            file.write(json.dumps(vectorIndex))
+
 
     def create_project_directory(self, project_name):
 
@@ -149,6 +178,23 @@ class MapComponentizer():
 
         return directory, exportFolder
     
+    def is_layer_visible(self, project: QgsProject, layer: QgsMapLayer):
+    #Checks if the layer is currently set visible in the layer tree.
+        layer_tree_root = project.layerTreeRoot()
+        layer_tree_layer = layer_tree_root.findLayer(layer)
+        return layer_tree_layer.isVisible()
+    
+    def getVectorLayerType(self, geojson):
+        jsonData = json.loads(geojson)
+        geomType = jsonData["features"][0]["geometry"]["type"] 
+        if geomType in ["Polygon", "MultiPolygon"]:
+            return "fill"
+        elif geomType in ["LineString", "MultiLineString"]:
+            return "line"
+        elif geomType == "Point":
+            return "circle"
+        else:
+            return None 
 
 map_componentizer = MapComponentizer()
 map_componentizer.main()

@@ -11,10 +11,7 @@ const MapComponentizerContextProvider = ({
   const [geojsonLayers, setGeojsonLayers] = useState<any[]>([]);
   const [geojsonIndex, setGeojsonIndex] = useState([]);
   const [wmsLayers, setWmsLayers] = useState();
-
-  console.log(geojsonIndex);
-  console.log(geojsonLayers);
-
+console.log(geojsonLayers)
   useEffect(() => {
     const fetchGeojsonFiles = async () => {
       const filesPromises = geojsonIndex.map(async (layer) => {
@@ -35,6 +32,7 @@ const MapComponentizerContextProvider = ({
       fetchGeojsonFiles();
     }
   }, [geojsonIndex]);
+
 
   useEffect(() => {
     const fetchData = async () => {
