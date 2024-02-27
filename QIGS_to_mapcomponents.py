@@ -60,10 +60,8 @@ class MapComponentizer():
         shutil.rmtree(self.temp_directory)
         os.mkdir(self.temp_directory)
         
-        subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}/{webAppName}')
-      
-       
-        
+        subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}/{webAppName}')     
+               
 
     def reproject_layers(self, project: QgsProject):
 
@@ -82,13 +80,13 @@ class MapComponentizer():
 
                     # Reproject the layer
                     crs = QgsCoordinateReferenceSystem('EPSG:4326')
-                    reprojected_path = f'./tmp/{layers_list[l].name()}_reprojected.gpkg'
+                    reprojected_path = f'./tmp/{layers_list[l].name()}.gpkg'
                     QgsVectorFileWriter.writeAsVectorFormat(
                         layers_list[l], reprojected_path, 'UTF-8', crs, 'GPKG')
 
                     # Load the reprojected layer back into the project
                     reprojected_layer = QgsVectorLayer(
-                        reprojected_path, f'{layers_list[l].name()}_reprojected', 'ogr')
+                        reprojected_path, f'{layers_list[l].name()}', 'ogr')
                     project.addMapLayer(reprojected_layer)
 
     def export_layers(self, project: QgsProject, outputFolder: str):
