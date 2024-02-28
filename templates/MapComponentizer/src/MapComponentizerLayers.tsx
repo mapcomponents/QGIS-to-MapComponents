@@ -1,15 +1,15 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { LayerList, LayerListItem, MlGeoJsonLayer, Sidebar } from "@mapcomponents/react-maplibre";
 import { MapComponentizerContext } from "./MapComponentizerContext";
 
 const MapComponentizerLayers = () => {
-  const context = useContext(MapComponentizerContext) as any;
 
-  console.log(context.geojsonLayers)
+    const context = useContext(MapComponentizerContext) as any;
+    const [open, setOpen] = useState(true);
 
   return (
     <>
-    <Sidebar sx={{zIndex: 1000}}>
+    <Sidebar open={open} setOpen={setOpen} name={"MapComponentizer"}>
       <LayerList>
         {context.geojsonLayers && context.geojsonLayers.map((layer)=>{
             return (
