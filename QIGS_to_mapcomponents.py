@@ -80,13 +80,13 @@ class MapComponentizer():
 
                     # Reproject the layer
                     crs = QgsCoordinateReferenceSystem('EPSG:4326')
-                    reprojected_path = f'./tmp/{layers_list[l].name()}.gpkg'
+                    reprojected_path = f'./tmp/{layers_list[l].name()}(4326).gpkg'
                     QgsVectorFileWriter.writeAsVectorFormat(
                         layers_list[l], reprojected_path, 'UTF-8', crs, 'GPKG')
 
                     # Load the reprojected layer back into the project
                     reprojected_layer = QgsVectorLayer(
-                        reprojected_path, f'{layers_list[l].name()}', 'ogr')
+                        reprojected_path, f'{layers_list[l].name()}(4326)', 'ogr')
                     project.addMapLayer(reprojected_layer)
 
     def export_layers(self, project: QgsProject, outputFolder: str):

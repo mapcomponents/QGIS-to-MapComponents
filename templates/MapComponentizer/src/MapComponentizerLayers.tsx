@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { LayerList, LayerListItem, MlGeoJsonLayer, Sidebar } from "@mapcomponents/react-maplibre";
+import { LayerList, LayerListFolder, LayerListItem, MlGeoJsonLayer, Sidebar } from "@mapcomponents/react-maplibre";
 import { MapComponentizerContext } from "./MapComponentizerContext";
 
 const MapComponentizerLayers = () => {
@@ -11,6 +11,7 @@ const MapComponentizerLayers = () => {
     <>
     <Sidebar open={open} setOpen={setOpen} name={"MapComponentizer"}>
       <LayerList>
+      <LayerListFolder name={"Vector Layers"} visible={true} >
         {context.geojsonLayers && context.geojsonLayers.map((layer)=>{
             return (
             <LayerListItem 
@@ -26,7 +27,7 @@ const MapComponentizerLayers = () => {
             />)
             
         })}
-
+</LayerListFolder>
       </LayerList>
       </Sidebar>
     </>
