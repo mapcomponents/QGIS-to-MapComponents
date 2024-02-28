@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const MapComponentizerContext = React.createContext({});
 const MapComponentizerProvider = MapComponentizerContext.Provider;
@@ -9,44 +9,55 @@ const MapComponentizerContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [geojsonLayers, setGeojsonLayers] = useState<any[]>([]);
-  const [geojsonIndex, setGeojsonIndex] = useState([]);
-  const [wmsLayers, setWmsLayers] = useState();
-console.log(geojsonLayers)
-  useEffect(() => {
-    const fetchGeojsonFiles = async () => {
-      const filesPromises = geojsonIndex.map(async (layer) => {
-        const fileResponse = await fetch(`../exported/geojson/${layer}`);
-        const fileData = await fileResponse.json();
-        return fileData;
-      });
-  
-      try {
-        const fetchedGeojsonLayers = await Promise.all(filesPromises);
-        setGeojsonLayers(fetchedGeojsonLayers);
-      } catch (error) {
-        console.error('Error fetching GeoJSON files:', error);
-      }
-    };
-  
-    if (geojsonIndex.length > 0) {
-      fetchGeojsonFiles();
+  const [geojsonIndex, setGeojsonIndex] = useState<string[]>([]);
+  const [wmsLayers, setWmsLayers] = useState<any[]>([]);
+  const [wmsIndex, setWmsIndex] = useState<string[]>([]);
+  console.log(wmsIndex)
+  console.log(wmsLayers);
+
+  const fetchIndexes = async (
+    setter: Dispatch<SetStateAction<string[]>>,
+    type: string
+  ) => {
+    const indexResponse = await fetch(`../exported/${type}/index.json`);
+    const index = await indexResponse.json();
+    setter(index);
+  };
+
+  const fetchLayerFiles = async (
+    setter: Dispatch<SetStateAction<any[]>>,
+    index: string[],
+    layerType: string
+  ) => {
+    const filesPromises = index.map(async (layer) => {
+      const fileResponse = await fetch(`../exported/${layerType}/${layer}`);
+      const fileData = await fileResponse.json();
+      return fileData;
+    });
+
+    try {
+      const fetchedLayers = await Promise.all(filesPromises);
+      setter(fetchedLayers);
+    } catch (error) {
+      console.error("Error fetching" + layerType + " files:", error);
     }
+  };
+
+  //fetch config objects for every layer
+  useEffect(() => {
+    geojsonIndex.length > 0 && fetchLayerFiles(setGeojsonLayers, geojsonIndex, "geojson");
   }, [geojsonIndex]);
 
-
   useEffect(() => {
-    const fetchData = async () => {
-      // Fetch the index file
-      const indexResponse = await fetch("../exported/geojson/index.json");
-      const indexData = await indexResponse.json();
+    wmsIndex.length > 0 && fetchLayerFiles(setWmsLayers, wmsIndex, "wms");
+  }, [wmsIndex]);
 
-      setGeojsonIndex(indexData);
-    };
+  //get layer lists for each layer type
+  useEffect(() => {
     // Call the fetchData function when the component mounts
-    fetchData();
+    fetchIndexes(setWmsIndex, "wms");
+    fetchIndexes(setGeojsonIndex, "geojson");
   }, []);
-
-
 
   const stateProviderValue = {
     geojsonLayers,

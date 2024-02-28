@@ -38,15 +38,14 @@ class MapComponentizer():
         self.export_layers(project, exportFolder)
 
         webAppName = projectName + '_mapComponents'
-        os.mkdir(f'{projectFolder}/{webAppName}')
         #subprocess.run(['npx', 'degit', 'mapcomponents/template', webAppName], cwd=projectFolder)
     
-        shutil.copytree(self.templatePath, f'{projectFolder}/{webAppName}', dirs_exist_ok=True)
-        subprocess.run(['mv', 'exported', webAppName], cwd=f'{projectFolder}')
+        shutil.copytree(self.templatePath, f'{projectFolder}', dirs_exist_ok=True)
+        #subprocess.run(['mv', 'exported'], cwd=f'{projectFolder}')
 
         #Start dev Server in the new app       
         
-        subprocess.run(['yarn'], cwd=f'{projectFolder}/{webAppName}')
+        subprocess.run(['yarn'], cwd=f'{projectFolder}')
         #install.wait() 
         
         # open dev server in the browser
@@ -60,7 +59,7 @@ class MapComponentizer():
         shutil.rmtree(self.temp_directory)
         os.mkdir(self.temp_directory)
         
-        subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}/{webAppName}')     
+        subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}')     
                
 
     def reproject_layers(self, project: QgsProject):
@@ -158,16 +157,16 @@ class MapComponentizer():
 
     def create_project_directory(self, project_name):
 
-        directory = f'{self.base_directory}/{project_name}'
+        directory = f'{self.base_directory}/{project_name}_MapComponentizer'
 
         # If the directory already exists, append a number to the project name
         counter = 1
         while os.path.exists(directory):
-            project_name_with_counter = f'{project_name}_{counter}'
+            project_name_with_counter = f'{project_name}_MapComponentizer_{counter}'
             directory = f'{self.base_directory}/{project_name_with_counter}'
             counter += 1
 
-        # Create the project directory
+        # Create the project directory        
         os.mkdir(directory)
         print(f'Directory "{directory}" created successfully.')
         exportFolder = directory + "/exported"
