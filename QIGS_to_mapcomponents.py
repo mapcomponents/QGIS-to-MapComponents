@@ -134,13 +134,16 @@ class MapComponentizer():
                                       for key, value in url_parameters.items()}
 
                 name = thisLayer.name()
-                layers = []
 
-                # recover the original layers list from th url:
+                layers = []
+                # recover the original layers list from the url:
                 if 'layers' in url_parameters:
                     for layer in url_parameters['layers']:
-                        layers.append({'visible': True, name: layer})
+                        layers.append({'visible': True, "name": layer})
                     new_url_parameters['layers'] = layers
+
+                if not new_url_parameters.get("name"):
+                    new_url_parameters["name"] = name
 
                 json_string = json.dumps(new_url_parameters)
                 with open(f'{wmsFolder}/{name}.json', 'w') as file:
