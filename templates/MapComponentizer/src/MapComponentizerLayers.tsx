@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import {
   LayerList,
-  LayerListFolder,
   LayerListItem,
   MlGeoJsonLayer,
   MlWmsLayer,
@@ -17,44 +16,41 @@ const MapComponentizerLayers = () => {
     <>
       <Sidebar open={open} setOpen={setOpen} name={"MapComponentizer"}>
         <LayerList>
-          <LayerListFolder name={"Vector Layers"} visible={true}>
-            {context.geojsonLayers &&
-              context.geojsonLayers.map((layer) => {
-                return (
+           {context.layers &&
+              context.layers.map((layer) => {
+                switch(layer.type){
+                  case "geojson":
+                      return (
                   <LayerListItem
                     key={layer.name}
                     name={layer.name}
                     configurable={true}
                     layerComponent={
                       <MlGeoJsonLayer
-                        type={layer.type}
-                        geojson={layer.geojson}
+                        type={layer.geomType}
+                        geojson={layer.geojson}                        
                       />
                     }
                   />
                 );
-              })}
-          </LayerListFolder>
-          <LayerListFolder name={"WMS Layers"} visible={true}>
-            {context.wmsLayers &&
-              context.wmsLayers.map((layer) => {
-         
-                return (
+                case "wms":
+                   return (
                   <LayerListItem
                     key={layer.name}
-                    name={layer.name }
+                    name={layer.name}
                     configurable={true}
                     layerComponent={
                       <MlWmsLayer                      
                       url={layer.url} 
-                      urlParameters={{...layer}}                 
+                      urlParameters={layer.urlParameters}                 
 
                        />
                     }
                   />
                 );
+                }                  
+               
               })}
-          </LayerListFolder>
         </LayerList>
       </Sidebar>
     </>

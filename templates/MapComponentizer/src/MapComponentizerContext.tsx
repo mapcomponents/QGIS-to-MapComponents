@@ -8,60 +8,57 @@ const MapComponentizerContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [geojsonLayers, setGeojsonLayers] = useState<any[]>([]);
-  const [geojsonIndex, setGeojsonIndex] = useState<string[]>([]);
-  const [wmsLayers, setWmsLayers] = useState<any[]>([]);
-  const [wmsIndex, setWmsIndex] = useState<string[]>([]);
-  console.log(wmsIndex)
-  console.log(wmsLayers);
+  const [layers, setLayers] = useState<any[]>([]);
+  const [config, setConfig] = useState<any>();
 
-  const fetchIndexes = async (
-    setter: Dispatch<SetStateAction<string[]>>,
-    type: string
-  ) => {
-    const indexResponse = await fetch(`../exported/${type}/index.json`);
-    const index = await indexResponse.json();
-    setter(index);
-  };
+  console.log(layers);
+  console.log(config)
 
   const fetchLayerFiles = async (
     setter: Dispatch<SetStateAction<any[]>>,
-    index: string[],
-    layerType: string
+    orderList: string[]
   ) => {
-    const filesPromises = index.map(async (layer) => {
-      const fileResponse = await fetch(`../exported/${layerType}/${layer}`);
-      const fileData = await fileResponse.json();
-      return fileData;
+    const filesPromises = orderList.reverse().map(async (layer) => {
+      try {
+        const fileResponse = await fetch(`../exported/${layer}.json`);
+        const fileData = await fileResponse.json();
+        return fileData;
+      } catch (error) {
+        console.error(`Error fetching ${layer}.json:`, error);
+        throw error; // Rethrow the error to make Promise.all catch it
+      }
     });
-
+  
     try {
       const fetchedLayers = await Promise.all(filesPromises);
       setter(fetchedLayers);
     } catch (error) {
-      console.error("Error fetching" + layerType + " files:", error);
+      console.error("Error fetching layers:", error);
     }
   };
 
-  //fetch config objects for every layer
-  useEffect(() => {
-    geojsonIndex.length > 0 && fetchLayerFiles(setGeojsonLayers, geojsonIndex, "geojson");
-  }, [geojsonIndex]);
+useEffect(()=>{
+  config?.order && fetchLayerFiles(setLayers, config.order)
 
-  useEffect(() => {
-    wmsIndex.length > 0 && fetchLayerFiles(setWmsLayers, wmsIndex, "wms");
-  }, [wmsIndex]);
+}, [config])
+ 
+  
 
   //get layer lists for each layer type
   useEffect(() => {
     // Call the fetchData function when the component mounts
-    fetchIndexes(setWmsIndex, "wms");
-    fetchIndexes(setGeojsonIndex, "geojson");
+    const fetchConfig = async (setter: Dispatch<SetStateAction<string[]>>) => {
+      const configResponse = await fetch(`../exported/config.json`);
+      const config = await configResponse.json();
+      setter(config);
+    };
+
+    fetchConfig(setConfig);
   }, []);
 
   const stateProviderValue = {
-    geojsonLayers,
-    wmsLayers,
+    layers,
+    config,
   };
 
   return (
