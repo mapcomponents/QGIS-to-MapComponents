@@ -12,6 +12,7 @@ from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLay
 from qgis.core import QgsCoordinateReferenceSystem
 import json
 from urllib.parse import urlparse, parse_qs
+from PyQt5.QtXml import *
 
 
 class MapComponentizer():
@@ -34,9 +35,10 @@ class MapComponentizer():
 
         projectFolder, exportFolder = self.create_project_directory(projectName)
 
+        self.export_project_details(project, exportFolder)
         self.reproject_layers(project)
         self.export_layers(project, exportFolder)
-        self.export_project_details(project, exportFolder)
+        
         
         #Create the MapComponents project using the selected template
         shutil.copytree(self.templatePath, f'{projectFolder}', dirs_exist_ok=True)
@@ -93,8 +95,7 @@ class MapComponentizer():
         new_layers_list = {}
         for l in project.mapLayers().values():
             new_layers_list[l.name()] = l            
-        #wmsFolder = f'{outputFolder}/wms'
-        #geosjonFolder = f'{outputFolder}/geojson'
+   
 
         for l in new_layers_list:
             thisLayer: QgsMapLayer = new_layers_list[l]
@@ -102,9 +103,7 @@ class MapComponentizer():
             if thisLayer.type() == QgsMapLayerType.VectorLayer:
         # the new list is looped and the vector layer with supported geomtrie exported as geojson:
                 if thisLayer.crs().authid() == 'EPSG:4326':
-                    # if not os.path.isdir(geosjonFolder):
-                    #     os.mkdir(geosjonFolder)
-                    
+                                       
                     exporter = QgsJsonExporter(thisLayer)
                     features = thisLayer.getFeatures()
                     geojson = exporter.exportFeatures(features)
@@ -113,7 +112,8 @@ class MapComponentizer():
                               "visible": self.is_layer_visible(project, thisLayer),
                               "geomType": self.getVectorLayerType(geojson),
                               "geojson": json.loads(geojson),
-                              "type": "geojson"                                                    
+                              "type": "geojson",
+                              "paint": self.get_Style(thisLayer)                                                    
                               }
                     
                     file = open(f'{outputFolder}/{name}.json', 'w')
@@ -122,8 +122,7 @@ class MapComponentizer():
        
             elif thisLayer.type() == QgsMapLayerType.RasterLayer:
          # read wms layer infos and export them as a json object:        
-                # if not os.path.isdir(wmsFolder):
-                #         os.mkdir(wmsFolder)
+              
                 source = thisLayer.source()
                 parsedUrl = urlparse('http://domain.de/?' + source)
                 url_parameters = parse_qs(parsedUrl.query)
@@ -198,11 +197,22 @@ class MapComponentizer():
         order = [layer.name() for layer in QgsLayerTree.layerOrder(project.layerTreeRoot())]
 
 
-        config = {"order": order}
+        config = {"order": order, "projectName": project.baseName()}
 
         with open(f'{exportFolder}/config.json', 'w') as file:
             file.write(json.dumps(config))
-        
+
+    def get_Style(self, layer: QgsMapLayer):
+        inputFilePAth = f'{self.temp_directory}/{layer.name()}.qml'
+        outputFilePath = f'{self.temp_directory}/{layer.name()}.json' 
+      
+        document = QDomDocument()
+        layer.exportNamedStyle(document)
+        with open(inputFilePAth, 'w') as file:
+                    file.write(document.toString())
+        subprocess.run(['geostyler', '-s', 'qml', '-t', 'mapbox', inputFilePAth, outputFilePath ] ) 
+# TODO: extract the result from the outputFilePath
+        return None    
 
 map_componentizer = MapComponentizer()
 map_componentizer.main()

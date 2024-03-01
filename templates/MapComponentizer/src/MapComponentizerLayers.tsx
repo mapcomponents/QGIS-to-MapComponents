@@ -14,7 +14,7 @@ const MapComponentizerLayers = () => {
 
   return (
     <>
-      <Sidebar open={open} setOpen={setOpen} name={"MapComponentizer"}>
+      <Sidebar open={open} setOpen={setOpen} name={context.config?.projectName ?? "MapComponentizer"}>
         <LayerList>
            {context.layers &&
               context.layers.map((layer) => {
@@ -28,7 +28,8 @@ const MapComponentizerLayers = () => {
                     layerComponent={
                       <MlGeoJsonLayer
                         type={layer.geomType}
-                        geojson={layer.geojson}                        
+                        geojson={layer.geojson} 
+                        paint={layer.paint}                      
                       />
                     }
                   />
@@ -38,11 +39,10 @@ const MapComponentizerLayers = () => {
                   <LayerListItem
                     key={layer.name}
                     name={layer.name}
-                    configurable={true}
                     layerComponent={
                       <MlWmsLayer                      
                       url={layer.url} 
-                      urlParameters={layer.urlParameters}                 
+                      urlParameters={layer.urlParameters}               
 
                        />
                     }
