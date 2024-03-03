@@ -7,6 +7,7 @@ import {
   Sidebar,
 } from "@mapcomponents/react-maplibre";
 import { MapComponentizerContext } from "./MapComponentizerContext";
+import { getPaintProp } from "./utils/getPaintProp";
 
 const MapComponentizerLayers = () => {
   const context = useContext(MapComponentizerContext) as any;
@@ -17,7 +18,7 @@ const MapComponentizerLayers = () => {
       <Sidebar open={open} setOpen={setOpen} name={context.config?.projectName ?? "MapComponentizer"}>
         <LayerList>
            {context.layers &&
-              context.layers.map((layer) => {
+              context.layers.map((layer, idx) => {
                 switch(layer.type){
                   case "geojson":
                       return (
@@ -28,8 +29,9 @@ const MapComponentizerLayers = () => {
                     layerComponent={
                       <MlGeoJsonLayer
                         type={layer.geomType}
-                        geojson={layer.geojson} 
-                        paint={layer.paint}                      
+                        geojson={layer.geojson}
+                        options={{ paint: layer.paint || getPaintProp(layer.geomType, idx) }} 
+                                           
                       />
                     }
                   />
@@ -39,6 +41,7 @@ const MapComponentizerLayers = () => {
                   <LayerListItem
                     key={layer.name}
                     name={layer.name}
+                    configurable={false}
                     layerComponent={
                       <MlWmsLayer                      
                       url={layer.url} 

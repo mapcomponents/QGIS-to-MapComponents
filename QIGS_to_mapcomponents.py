@@ -8,8 +8,8 @@ from subprocess import PIPE, Popen
 import shutil
    
 import json
-from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsMapLayer, QgsLayerTree
-from qgis.core import QgsCoordinateReferenceSystem
+from qgis import processing
+from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsMapLayer, QgsLayerTree, QgsCoordinateReferenceSystem
 import json
 from urllib.parse import urlparse, parse_qs
 from PyQt5.QtXml import *
@@ -25,7 +25,7 @@ class MapComponentizer():
 
         # Get the project instance
         project = QgsProject.instance()
-
+        
         # Print the current project file name (might be empty in case no projects have been loaded)
         print(project.fileName())
 
@@ -42,11 +42,10 @@ class MapComponentizer():
         
         #Create the MapComponents project using the selected template
         shutil.copytree(self.templatePath, f'{projectFolder}', dirs_exist_ok=True)
+        subprocess.run(["mv", "exported", "public" ], cwd=f'{projectFolder}')
        
-        #Start dev Server in the new app       
-        
+        #Start dev Server in the new app 
         subprocess.run(['yarn'], cwd=f'{projectFolder}')
-        #install.wait() 
         
         # open dev server in the browser
         url = "http://localhost:5173/"        
@@ -58,9 +57,10 @@ class MapComponentizer():
         project.clear()
         shutil.rmtree(self.temp_directory)
         os.mkdir(self.temp_directory)
-        
+
         subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}')     
-               
+        
+         
 
     def reproject_layers(self, project: QgsProject):
 
@@ -136,7 +136,8 @@ class MapComponentizer():
                 # recover the original layers list from the url:
                 if 'layers' in url_parameters:
                     for layer in url_parameters['layers']:
-                        layers.append({'visible': True, "name": layer})
+                        #layers.append({'visible': True, "name": layer})
+                        layers.append(layer)
                     new_url_parameters['layers'] = layers
 
                 # if not new_url_parameters.get("name"):
@@ -195,7 +196,10 @@ class MapComponentizer():
     
     def export_project_details(self, project: QgsProject, exportFolder: str):
         order = [layer.name() for layer in QgsLayerTree.layerOrder(project.layerTreeRoot())]
+        layers = project.mapLayers().values()
 
+        # Calculate the combined extent of all layers
+          
 
         config = {"order": order, "projectName": project.baseName()}
 

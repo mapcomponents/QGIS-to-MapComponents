@@ -14,6 +14,7 @@ const MapComponentizerContextProvider = ({
   console.log(layers);
   console.log(config)
 
+
   const fetchLayerFiles = async (
     setter: Dispatch<SetStateAction<any[]>>,
     orderList: string[]
@@ -58,7 +59,7 @@ useEffect(()=>{
 
   const stateProviderValue = {
     layers,
-    config,
+    config
   };
 
   return (
