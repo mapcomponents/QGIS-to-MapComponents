@@ -4,11 +4,10 @@
 
 import os
 import subprocess
-from subprocess import PIPE, Popen
+from subprocess import PIPE
 import shutil
    
 import json
-from qgis import processing
 from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsMapLayer, QgsLayerTree, QgsCoordinateReferenceSystem
 import json
 from urllib.parse import urlparse, parse_qs
@@ -142,8 +141,12 @@ class MapComponentizer():
 
                 # if not new_url_parameters.get("name"):
                 #     new_url_parameters["name"] = name
+                
+
                 url = new_url_parameters["url"]
                 del new_url_parameters["url"]
+                new_url_parameters["transparent"] = "TRUE"
+
 
                 wmsLayer = {"urlParameters": new_url_parameters,
                            "url": url,
