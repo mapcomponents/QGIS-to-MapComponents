@@ -30,7 +30,7 @@ const MapComponentizerLayers = () => {
                       <MlGeoJsonLayer
                         type={layer.geomType}
                         geojson={layer.geojson}
-                        options={{ paint: layer.paint || getPaintProp(layer.geomType, idx) }} 
+                        options={{ paint: getPaintProp(layer, idx) }} 
                                            
                       />
                     }
