@@ -12,6 +12,8 @@ from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLay
 import json
 from urllib.parse import urlparse, parse_qs
 from PyQt5.QtXml import *
+from bridgestyle.qgis import layerStyleAsMapbox
+
 
 
 class MapComponentizer():
@@ -110,9 +112,9 @@ class MapComponentizer():
                     config = {"name": name,
                               "visible": self.is_layer_visible(project, thisLayer),
                               "geomType": self.getVectorLayerType(geojson),
-                              "geojson": json.loads(geojson),
+                              "paint": json.loads(self.get_Style(thisLayer)[0]),   
                               "type": "geojson",
-                              "paint": self.get_Style(thisLayer)                                                    
+                              "geojson": json.loads(geojson)                   
                               }
                     
                     file = open(f'{outputFolder}/{name}.json', 'w')
@@ -213,14 +215,17 @@ class MapComponentizer():
     def get_Style(self, layer: QgsMapLayer):
         inputFilePAth = f'{self.temp_directory}/{layer.name()}.qml'
         outputFilePath = f'{self.temp_directory}/{layer.name()}.json' 
-      
-        document = QDomDocument()
-        layer.exportNamedStyle(document)
-        with open(inputFilePAth, 'w') as file:
-                    file.write(document.toString())
-        subprocess.run(['geostyler', '-s', 'qml', '-t', 'mapbox', inputFilePAth, outputFilePath ] ) 
+
+        mapbox = layerStyleAsMapbox(layer)
+
+
+        # document = QDomDocument()
+        # layer.exportNamedStyle(document)
+        # with open(inputFilePAth, 'w') as file:
+        #             file.write(document.toString())
+        # subprocess.run(['geostyler', '-s', 'qml', '-t', 'mapbox', inputFilePAth, outputFilePath ] ) 
 # TODO: extract the result from the outputFilePath
-        return None    
+        return mapbox    
 
 map_componentizer = MapComponentizer()
 map_componentizer.main()
