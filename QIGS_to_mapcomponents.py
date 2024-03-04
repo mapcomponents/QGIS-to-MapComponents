@@ -155,7 +155,8 @@ class MapComponentizer():
                 json_string = json.dumps(wmsLayer)
                 with open(f'{outputFolder}/{name}.json', 'w') as file:
                     file.write(json_string)             
-
+            
+                
 
     def create_project_directory(self, project_name):
 

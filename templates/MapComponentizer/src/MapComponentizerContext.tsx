@@ -26,12 +26,14 @@ const MapComponentizerContextProvider = ({
         return fileData;
       } catch (error) {
         console.error(`Error fetching ${layer}.json:`, error);
-        throw error; // Rethrow the error to make Promise.all catch it
+        //catch error; // Rethrow the error to make Promise.all catch it
+        return null;
       }
     });
   
     try {
-      const fetchedLayers = await Promise.all(filesPromises);
+      // Filter out layers that were not fetched successfully (null values)
+      const fetchedLayers = (await Promise.all(filesPromises)).filter(layer => layer !== null);
       setter(fetchedLayers);
     } catch (error) {
       console.error("Error fetching layers:", error);
@@ -44,7 +46,6 @@ useEffect(()=>{
 }, [config])
  
   
-
   //get layer lists for each layer type
   useEffect(() => {
     // Call the fetchData function when the component mounts
