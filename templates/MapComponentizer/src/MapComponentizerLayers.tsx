@@ -19,6 +19,7 @@ const MapComponentizerLayers = () => {
         <LayerList>
            {context.layers &&
               context.layers.map((layer, idx) => {
+                
                 switch(layer.type){
                   case "geojson":
                       return (

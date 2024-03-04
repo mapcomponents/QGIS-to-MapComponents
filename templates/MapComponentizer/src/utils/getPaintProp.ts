@@ -54,10 +54,10 @@ export function getPaintProp(layer: any, index: number) {
 
       case "line":
 
-      const line = layer.paint.layers?.filter((l)=> l.type === "circle");
+      const line = layer.paint.layers?.filter((l)=> l.type === "line");
         
         return {
-          ...line?.[0].paint
+          ...line?.[0]?.paint
         };
 
       case "circle":
@@ -70,6 +70,6 @@ export function getPaintProp(layer: any, index: number) {
         return undefined;
     }
   };
-
+  layer.paint && console.log( getExportedPaint())
   return layer.paint ? getExportedPaint() : getDefaultPaint();
 }
