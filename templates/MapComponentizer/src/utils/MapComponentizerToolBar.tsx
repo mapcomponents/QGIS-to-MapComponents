@@ -13,13 +13,14 @@ export default function MapComponentizerToolBar(
   return (
     <>
       <TopToolbar unmovableButtons={<>
-        <MlCreatePdfButton />
+        
         {props.tools &&
           props.tools.map((tool) => (
-            <Button variant="contained" onClick={tool.action} sx={{marginLeft: 1}}>
+            <Button variant="contained" onClick={tool.action} sx={{marginRight: 1}}>
              {tool.icon}
             </Button>
           ))}
+          <MlCreatePdfButton />
       </>} />
     </>
   );
