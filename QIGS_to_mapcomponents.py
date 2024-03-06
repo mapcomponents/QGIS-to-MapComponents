@@ -36,15 +36,16 @@ class MapComponentizer():
 
         projectFolder, exportFolder = self.create_project_directory(projectName)
 
+        self.export_project_details(project, exportFolder)
         self.reproject_layers(project)
         self.export_layers(project, exportFolder)
-        self.export_project_details(project, exportFolder)
+        
         
         
         #Create the MapComponents project using the selected template
         shutil.copytree(self.templatePath, f'{projectFolder}', dirs_exist_ok=True)
         subprocess.run(["mv", "exported", "public" ], cwd=f'{projectFolder}')
-        shutil.rmtree(exportFolder)
+        #shutil.rmtree(exportFolder)
         
         #Start dev Server in the new app 
         subprocess.run(['yarn'], cwd=f'{projectFolder}')
@@ -72,30 +73,27 @@ class MapComponentizer():
         # dictionary with key = layer name and value = layer object
         layers_list = {}
         for l in project.mapLayers().values():
-            layers_list[l.name()]= l
+            layers_list[l.name()] = l
+
         # loop the list looking for vector Layers with unsupported CRS:
         for l in layers_list:
             thisLayer: QgsMapLayer = layers_list[l]
+            if layers_list[l].type() == QgsMapLayerType.VectorLayer:
+                if layers_list[l].crs().authid() != 'EPSG:4326':
 
-            if thisLayer.type() == QgsMapLayerType.VectorLayer:
-                if thisLayer.crs().authid() != 'EPSG:4326':
-
-                    #save layer style to aply on the new layer
                     style_path = f'./tmp/{thisLayer.name()}.qml'
                     thisLayer.saveNamedStyle(style_path)
-
                     # Reproject the layer
                     crs = QgsCoordinateReferenceSystem('EPSG:4326')
-                    reprojected_path = f'./tmp/{thisLayer.name()}_rep.gpkg'
+                    reprojected_path = f'./tmp/{thisLayer.name()}.gpkg'
                     QgsVectorFileWriter.writeAsVectorFormat(
-                        layers_list[l], reprojected_path, 'UTF-8', crs, 'GPKG')
+                        thisLayer, reprojected_path, 'UTF-8', crs, 'GPKG')
 
                     # Load the reprojected layer back into the project
-                    reprojected_layer = QgsVectorLayer(reprojected_path, f'{thisLayer.name()}_rep', 'ogr')
-                    project.removeMapLayer(thisLayer.id())
+                    reprojected_layer = QgsVectorLayer(
+                        reprojected_path, f'{thisLayer.name()}', 'ogr')
                     reprojected_layer.loadNamedStyle(style_path)
-                    project.addMapLayer(reprojected_layer, True)
-                    
+                    project.addMapLayer(reprojected_layer)                   
                     
 
 
