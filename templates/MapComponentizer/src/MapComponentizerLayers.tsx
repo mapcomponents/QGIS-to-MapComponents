@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   LayerList,
   LayerListItem,
@@ -8,17 +8,16 @@ import {
   useMap,
 } from "@mapcomponents/react-maplibre";
 import { MapComponentizerContext } from "./MapComponentizerContext";
-import { getPaintProp, getprojectExtent } from "./utils/MapComponentizerUtils";
+import { getLabels, getPaintProp, getprojectExtent } from "./utils/MapComponentizerUtils";
 
 const MapComponentizerLayers = () => {
+
   const context = useContext(MapComponentizerContext) as any;
   const [open, setOpen] = useState(true);
   const mapHook = useMap({
 		mapId: undefined,
 	});
-
-mapHook.map?.fitBounds(getprojectExtent().bbox)
-
+  mapHook.map?.fitBounds(getprojectExtent(context.layers).bbox)
 
   return (
     <>
@@ -38,8 +37,10 @@ mapHook.map?.fitBounds(getprojectExtent().bbox)
                       <MlGeoJsonLayer
                         type={layer.geomType}
                         geojson={layer.geojson}
+                        layerId={layer.name}
                         options={{ paint: getPaintProp(layer, idx) }} 
-                                           
+                        labelProp={"_"}
+                        labelOptions={getLabels(layer)}
                       />
                     }
                   />
@@ -53,7 +54,12 @@ mapHook.map?.fitBounds(getprojectExtent().bbox)
                     layerComponent={
                       <MlWmsLayer                      
                       url={layer.url} 
-                      urlParameters={layer.urlParameters}               
+                      urlParameters={{
+                        layers: "",
+                         ...layer.urlParameters}   
+                      }
+                        
+                                   
 
                        />
                     }

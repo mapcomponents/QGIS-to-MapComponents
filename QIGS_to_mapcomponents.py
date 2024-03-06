@@ -8,7 +8,7 @@ from subprocess import PIPE
 import shutil
    
 import json
-from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsMapLayer, QgsLayerTree, QgsCoordinateReferenceSystem
+from qgis.core import QgsApplication, QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsMapLayer, QgsLayerTree, QgsCoordinateReferenceSystem
 import json
 from urllib.parse import urlparse, parse_qs
 from PyQt5.QtXml import *
@@ -24,6 +24,13 @@ class MapComponentizer():
 
     def main(self):
 
+        # get Application path
+        qgs = QgsApplication([], False)
+        QgsApplication.setPrefixPath("/usr/lib/qgis", True)
+        QgsApplication.initQgis()
+        for alg in QgsApplication.processingRegistry().algorithms():
+            print(alg.id(), "->", alg.displayName())
+    
         # Get the project instance
         project = QgsProject.instance()
         
@@ -146,7 +153,7 @@ class MapComponentizer():
                     for layer in url_parameters['layers']:
                         #layers.append({'visible': True, "name": layer})
                         layers.append(layer)
-                    new_url_parameters['layers'] = layers
+                    new_url_parameters['layers'] = ", ".join(layers)
 
                 # if not new_url_parameters.get("name"):
                 #     new_url_parameters["name"] = name

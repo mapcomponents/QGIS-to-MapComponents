@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { MapComponentizerContext } from "../MapComponentizerContext";
-import {Feature, Point, Polygon, Position, Properties, bbox, bboxPolygon, center, centroid, featureCollection } from '@turf/turf';
+import {Feature, Polygon, Properties, bbox, bboxPolygon, centroid, featureCollection } from '@turf/turf';
 import { LngLatBoundsLike } from 'maplibre-gl';
 
 const mapColors = [
@@ -78,13 +78,20 @@ export function getPaintProp(layer: any, index: number) {
   return layer.paint ? getExportedPaint() : getDefaultPaint();
 }
 
+export const getLabels = (layer: any)=>{
+  const symbolConfig = layer.paint?.layers?.filter((l)=> l.type === "symbol")[0]
+  const options = {"paint": symbolConfig?.paint, "layout": symbolConfig?.layout}
+  if (options.layout && options.layout["text-font"]) {
+    delete options.layout["text-font"];
+  }
+    return symbolConfig ? options  : {}  
+  }
 
-export const getprojectExtent: ()=>{"bbox": LngLatBoundsLike, "center": any} = ()=>{
 
-  const context = useContext(MapComponentizerContext) as any;
+export const getprojectExtent: (layers: any)=>{"bbox": LngLatBoundsLike, "center": any} = (layers: any)=>{
 
   var polygons: Feature<Polygon, Properties>[] = []
-  context.layers.filter((l)=> l.type === "geojson").forEach(layer => {
+  layers.filter((l)=> l.type === "geojson").forEach(layer => {
 
    polygons.push(bboxPolygon(bbox(layer.geojson)))
 
