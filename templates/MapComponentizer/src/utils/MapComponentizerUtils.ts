@@ -1,3 +1,7 @@
+import { useContext } from "react";
+import { MapComponentizerContext } from "../MapComponentizerContext";
+import {Feature, Point, Polygon, Position, Properties, bbox, bboxPolygon, center, centroid, featureCollection } from '@turf/turf';
+import { LngLatBoundsLike } from 'maplibre-gl';
 
 const mapColors = [
   "#586A23",
@@ -70,6 +74,23 @@ export function getPaintProp(layer: any, index: number) {
         return undefined;
     }
   };
-  layer.paint && console.log( getExportedPaint())
+ 
   return layer.paint ? getExportedPaint() : getDefaultPaint();
+}
+
+
+export const getprojectExtent: ()=>{"bbox": LngLatBoundsLike, "center": any} = ()=>{
+
+  const context = useContext(MapComponentizerContext) as any;
+
+  var polygons: Feature<Polygon, Properties>[] = []
+  context.layers.filter((l)=> l.type === "geojson").forEach(layer => {
+
+   polygons.push(bboxPolygon(bbox(layer.geojson)))
+
+  });
+  const extent ={"bbox": bbox(featureCollection(polygons)) as LngLatBoundsLike, "center": centroid(featureCollection(polygons))}
+  
+ 
+  return extent
 }

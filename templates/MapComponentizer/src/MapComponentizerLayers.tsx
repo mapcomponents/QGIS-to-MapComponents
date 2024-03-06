@@ -5,13 +5,20 @@ import {
   MlGeoJsonLayer,
   MlWmsLayer,
   Sidebar,
+  useMap,
 } from "@mapcomponents/react-maplibre";
 import { MapComponentizerContext } from "./MapComponentizerContext";
-import { getPaintProp } from "./utils/getPaintProp";
+import { getPaintProp, getprojectExtent } from "./utils/MapComponentizerUtils";
 
 const MapComponentizerLayers = () => {
   const context = useContext(MapComponentizerContext) as any;
   const [open, setOpen] = useState(true);
+  const mapHook = useMap({
+		mapId: undefined,
+	});
+
+mapHook.map?.fitBounds(getprojectExtent().bbox)
+
 
   return (
     <>
