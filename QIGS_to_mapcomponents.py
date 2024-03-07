@@ -4,15 +4,16 @@
 
 import os
 import subprocess
-from subprocess import PIPE, Popen
+from subprocess import PIPE
 import shutil
    
 import json
-from qgis import processing
-from qgis.core import QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsMapLayer, QgsLayerTree, QgsCoordinateReferenceSystem
+from qgis.core import QgsApplication, QgsProject, QgsVectorFileWriter, QgsVectorLayer, QgsMapLayerType, QgsJsonExporter, QgsMapLayer, QgsLayerTree, QgsCoordinateReferenceSystem
 import json
 from urllib.parse import urlparse, parse_qs
 from PyQt5.QtXml import *
+from bridgestyle.qgis import layerStyleAsMapbox
+
 
 
 class MapComponentizer():
@@ -23,6 +24,13 @@ class MapComponentizer():
 
     def main(self):
 
+        # get Application path
+        qgs = QgsApplication([], False)
+        QgsApplication.setPrefixPath("/usr/lib/qgis", True)
+        QgsApplication.initQgis()
+        for alg in QgsApplication.processingRegistry().algorithms():
+            print(alg.id(), "->", alg.displayName())
+    
         # Get the project instance
         project = QgsProject.instance()
         
@@ -40,10 +48,12 @@ class MapComponentizer():
         self.export_layers(project, exportFolder)
         
         
+        
         #Create the MapComponents project using the selected template
         shutil.copytree(self.templatePath, f'{projectFolder}', dirs_exist_ok=True)
         subprocess.run(["mv", "exported", "public" ], cwd=f'{projectFolder}')
-       
+        #shutil.rmtree(exportFolder)
+        
         #Start dev Server in the new app 
         subprocess.run(['yarn'], cwd=f'{projectFolder}')
         
@@ -54,6 +64,7 @@ class MapComponentizer():
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")
 
+        # clear project and temp directory
         project.clear()
         shutil.rmtree(self.temp_directory)
         os.mkdir(self.temp_directory)
@@ -73,21 +84,25 @@ class MapComponentizer():
 
         # loop the list looking for vector Layers with unsupported CRS:
         for l in layers_list:
-
+            thisLayer: QgsMapLayer = layers_list[l]
             if layers_list[l].type() == QgsMapLayerType.VectorLayer:
                 if layers_list[l].crs().authid() != 'EPSG:4326':
 
+                    style_path = f'./tmp/{thisLayer.name()}.qml'
+                    thisLayer.saveNamedStyle(style_path)
                     # Reproject the layer
                     crs = QgsCoordinateReferenceSystem('EPSG:4326')
-                    reprojected_path = f'./tmp/{layers_list[l].name()}.gpkg'
+                    reprojected_path = f'./tmp/{thisLayer.name()}.gpkg'
                     QgsVectorFileWriter.writeAsVectorFormat(
-                        layers_list[l], reprojected_path, 'UTF-8', crs, 'GPKG')
-
+                        thisLayer, reprojected_path, 'UTF-8', crs, 'GPKG')
+                    project.removeMapLayer(thisLayer.name())
                     # Load the reprojected layer back into the project
                     reprojected_layer = QgsVectorLayer(
-                        reprojected_path, f'{layers_list[l].name()}', 'ogr')
-                    project.removeMapLayer(layers_list[l])
-                    project.addMapLayer(reprojected_layer)
+                    reprojected_path, f'{thisLayer.name()}', 'ogr')
+
+                    reprojected_layer.loadNamedStyle(style_path)
+                    project.addMapLayer(reprojected_layer)                   
+                    
 
     def export_layers(self, project: QgsProject, outputFolder: str):
 
@@ -111,9 +126,9 @@ class MapComponentizer():
                     config = {"name": name,
                               "visible": self.is_layer_visible(project, thisLayer),
                               "geomType": self.getVectorLayerType(geojson),
-                              "geojson": json.loads(geojson),
+                              "paint": json.loads(layerStyleAsMapbox(thisLayer)[0]),   
                               "type": "geojson",
-                              "paint": self.get_Style(thisLayer)                                                    
+                              "geojson": json.loads(geojson)                   
                               }
                     
                     file = open(f'{outputFolder}/{name}.json', 'w')
@@ -138,12 +153,16 @@ class MapComponentizer():
                     for layer in url_parameters['layers']:
                         #layers.append({'visible': True, "name": layer})
                         layers.append(layer)
-                    new_url_parameters['layers'] = layers
+                    new_url_parameters['layers'] = ", ".join(layers)
 
                 # if not new_url_parameters.get("name"):
                 #     new_url_parameters["name"] = name
+                
+
                 url = new_url_parameters["url"]
                 del new_url_parameters["url"]
+                new_url_parameters["transparent"] = "TRUE"
+
 
                 wmsLayer = {"urlParameters": new_url_parameters,
                            "url": url,
@@ -208,16 +227,17 @@ class MapComponentizer():
             file.write(json.dumps(config))
 
     def get_Style(self, layer: QgsMapLayer):
-        inputFilePAth = f'{self.temp_directory}/{layer.name()}.qml'
-        outputFilePath = f'{self.temp_directory}/{layer.name()}.json' 
-      
-        document = QDomDocument()
-        layer.exportNamedStyle(document)
-        with open(inputFilePAth, 'w') as file:
-                    file.write(document.toString())
-        subprocess.run(['geostyler', '-s', 'qml', '-t', 'mapbox', inputFilePAth, outputFilePath ] ) 
-# TODO: extract the result from the outputFilePath
-        return None    
+        # inputFilePAth = f'{self.temp_directory}/{layer.name()}.qml'
+        # outputFilePath = f'{self.temp_directory}/{layer.name()}.json' 
+
+        mapbox = layerStyleAsMapbox(layer)
+        # document = QDomDocument()
+        # layer.exportNamedStyle(document)
+        # with open(inputFilePAth, 'w') as file:
+        #             file.write(document.toString())
+        # subprocess.run(['geostyler', '-s', 'qml', '-t', 'mapbox', inputFilePAth, outputFilePath ] ) 
+
+        return mapbox    
 
 map_componentizer = MapComponentizer()
 map_componentizer.main()

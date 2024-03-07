@@ -1,5 +1,5 @@
 import "./App.css";
-import { MapLibreMap } from "@mapcomponents/react-maplibre";
+import { MapLibreMap, MlNavigationTools } from "@mapcomponents/react-maplibre";
 import MapComponentizerLayers from "./MapComponentizerLayers";
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
         }}
         style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
       />
-
+<MlNavigationTools showCenterLocationButton={true} showFollowGpsButton={false}/>
      <MapComponentizerLayers />
      
     </>

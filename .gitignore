@@ -10,3 +10,4 @@ output/*
 *.gpkg-wal
 *.qgs~
 *_reprojected.gpkg
+*.pyc

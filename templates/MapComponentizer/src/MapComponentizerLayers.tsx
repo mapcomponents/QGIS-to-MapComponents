@@ -3,22 +3,41 @@ import {
   LayerList,
   LayerListItem,
   MlGeoJsonLayer,
+  MlMeasureTool,
   MlWmsLayer,
-  Sidebar,
+  Sidebar,  
+  TopToolbar,  
+  useMap,
 } from "@mapcomponents/react-maplibre";
 import { MapComponentizerContext } from "./MapComponentizerContext";
-import { getPaintProp } from "./utils/getPaintProp";
-
+import { getLabels, getPaintProp, getprojectExtent } from "./utils/MapComponentizerUtils";
+import {Button} from '@mui/material';
+import MapComponentizerToolBar from "./utils/MapComponentizerToolBar";
+import LayersIcon from '@mui/icons-material/Layers';
+import StraightenIcon from '@mui/icons-material/Straighten';
+ 
 const MapComponentizerLayers = () => {
+
   const context = useContext(MapComponentizerContext) as any;
   const [open, setOpen] = useState(true);
+  const [showMeasureTool, setShowMeasureTool ] = useState(false);
+  const mapHook = useMap({
+		mapId: undefined,
+	});
+  mapHook.map?.fitBounds(getprojectExtent(context.layers).bbox)
+
+const tools = [{icon: <LayersIcon />, action: ()=> setOpen(!open)}, {icon: <StraightenIcon/>, action:()=> setShowMeasureTool(!showMeasureTool) }]
 
   return (
     <>
+  <MapComponentizerToolBar 
+  tools={tools}
+  />
       <Sidebar open={open} setOpen={setOpen} name={context.config?.projectName ?? "MapComponentizer"}>
         <LayerList>
            {context.layers &&
               context.layers.map((layer, idx) => {
+                
                 switch(layer.type){
                   case "geojson":
                       return (
@@ -30,8 +49,10 @@ const MapComponentizerLayers = () => {
                       <MlGeoJsonLayer
                         type={layer.geomType}
                         geojson={layer.geojson}
-                        options={{ paint: layer.paint || getPaintProp(layer.geomType, idx) }} 
-                                           
+                        layerId={layer.name}
+                        options={{ paint: getPaintProp(layer, idx) }} 
+                        labelProp={"_"}
+                        labelOptions={getLabels(layer)}
                       />
                     }
                   />
@@ -45,7 +66,12 @@ const MapComponentizerLayers = () => {
                     layerComponent={
                       <MlWmsLayer                      
                       url={layer.url} 
-                      urlParameters={layer.urlParameters}               
+                      urlParameters={{
+                        layers: "",
+                         ...layer.urlParameters}   
+                      }
+                        
+                                   
 
                        />
                     }
@@ -55,7 +81,9 @@ const MapComponentizerLayers = () => {
                
               })}
         </LayerList>
-      </Sidebar>
+
+        {showMeasureTool && <MlMeasureTool/>}
+      </Sidebar>     
     </>
   );
 };
