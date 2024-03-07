@@ -95,14 +95,14 @@ class MapComponentizer():
                     reprojected_path = f'./tmp/{thisLayer.name()}.gpkg'
                     QgsVectorFileWriter.writeAsVectorFormat(
                         thisLayer, reprojected_path, 'UTF-8', crs, 'GPKG')
-
+                    project.removeMapLayer(thisLayer.name())
                     # Load the reprojected layer back into the project
                     reprojected_layer = QgsVectorLayer(
-                        reprojected_path, f'{thisLayer.name()}', 'ogr')
+                    reprojected_path, f'{thisLayer.name()}', 'ogr')
+
                     reprojected_layer.loadNamedStyle(style_path)
                     project.addMapLayer(reprojected_layer)                   
                     
-
 
     def export_layers(self, project: QgsProject, outputFolder: str):
 
