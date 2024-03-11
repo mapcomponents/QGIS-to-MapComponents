@@ -68,7 +68,7 @@ export function getPaintProp(layer: any, index: number) {
         const circle =  layer.paint.layers?.filter((l) => l.type === "circle");
 
        return {
-        ...circle?.[0].paint
+        ...circle?.[0]?.paint
        }
       default:
         return undefined;

@@ -32,6 +32,7 @@ __revision__ = '$Format:%H$'
 
 import inspect
 import os
+import platform
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (
     QgsProcessingAlgorithm,
@@ -51,7 +52,6 @@ import os
 from qgis.PyQt.QtGui import QIcon
 
 
-
 class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
 
     # Constants used to refer to parameters and outputs. They will be
@@ -67,7 +67,6 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         """
         Here we define the inputs and output of the algorithm.
         """
-        
 
         self.addParameter(
             QgsProcessingParameterFolderDestination(
@@ -124,12 +123,12 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
 
         # Create the MapComponents project using the selected template
         shutil.copytree(TEMPLATE_PATH, f'{projectFolder}', dirs_exist_ok=True)
-        
+
         # Start dev Server in the new app
-        ## only for stand-alone script
-        
+        # only for stand-alone script
+
         #subprocess.run(['yarn'], cwd=f'{projectFolder}')
-      
+
         # open dev server in the browser
         # url = "http://localhost:5173/"
         # try:
@@ -139,10 +138,26 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
 
         # qgs.exitQgis()
 
+    
+        bashPath = f'{projectFolder}/start_dev_server.sh'
+
+
+        if platform.system() == 'Darwin':       # macOS
+            subprocess.call(('open', bashPath))
+        elif platform.system() == 'Windows':    # Windows
+            os.startfile(bashPath)
+        else:                                   # linux variants
+            result = subprocess.run(['bash', bashPath])
+
+            if result.returncode == 0:
+                feedback.pushInfo("Bash script executed successfully")
+            else:
+                feedback.pushInfo(f"Error executing Bash script. Return code: {result.returncode}")
+
         shutil.rmtree(TEMP_DIRECTORY)
         os.mkdir(TEMP_DIRECTORY)
 
-        #subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}')
+    #subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}')
 
         return {self.OUTPUT: projectFolder}
 
@@ -173,7 +188,7 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
         icon = QIcon(os.path.join(os.path.join(cmd_folder, 'logo.svg')))
         return icon
-   
+
     def get_folder_names(self, directory_path):
         folder_names = [folder for folder in os.listdir(
             directory_path) if os.path.isdir(os.path.join(directory_path, folder))]
