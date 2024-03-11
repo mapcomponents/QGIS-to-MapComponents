@@ -27,7 +27,7 @@ tags=web, wms, geojson, python
 
 homepage=https://mapcomponents.org/
 category=Analysis
-icon=icon.png
+icon=logo.svg
 # experimental flag
 experimental=True
 

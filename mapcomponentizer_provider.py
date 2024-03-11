@@ -30,8 +30,12 @@ __copyright__ = '(C) 2024 by WhereGroup GmbH'
 
 __revision__ = '$Format:%H$'
 
+import inspect
+import os
 from qgis.core import QgsProcessingProvider
+from qgis.PyQt.QtGui import QIcon
 from .mapcomponentizer_algorithm import MapComponentizerAlgorithm
+from . import resources
 
 
 class MapComponentizerProvider(QgsProcessingProvider):
@@ -63,7 +67,7 @@ class MapComponentizerProvider(QgsProcessingProvider):
         string should be a unique, short, character only string, eg "qgis" or
         "gdal". This string should not be localised.
         """
-        return 'MapComponents Provider'
+        return 'MapComponents'
 
     def name(self):
         """
@@ -72,14 +76,12 @@ class MapComponentizerProvider(QgsProcessingProvider):
 
         This string should be short (e.g. "Lastools") and localised.
         """
-        return self.tr('MapComponents Provider')
+        return self.tr('MapComponents')
 
     def icon(self):
-        """
-        Should return a QIcon which is used for your provider inside
-        the Processing toolbox.
-        """
-        return QgsProcessingProvider.icon(self)
+        cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
+        icon = QIcon(os.path.join(os.path.join(cmd_folder, 'logo.svg')))
+        return icon
 
     def longName(self):
         """
