@@ -14,9 +14,3 @@ yarn dev
 ```bash
 yarn build
 ```
-
-## Create a new app from this template
-
-```bash
-npx degit mapcomponents/template my-new-app
-```
