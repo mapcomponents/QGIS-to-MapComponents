@@ -21,7 +21,8 @@ class ProjectUtils:
         # Create the project directory        
         os.mkdir(directory)
         print(f'Directory "{directory}" created successfully.')
-        exportFolder = directory + "/exported"
+        os.mkdir(directory + "/public")
+        exportFolder = directory + "/public/exported"
         os.mkdir(exportFolder)       
 
         return directory, exportFolder

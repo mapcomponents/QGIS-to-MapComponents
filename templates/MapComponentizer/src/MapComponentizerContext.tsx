@@ -21,7 +21,7 @@ const MapComponentizerContextProvider = ({
   ) => {
     const filesPromises = orderList.reverse().map(async (layer) => {
       try {
-        const fileResponse = await fetch(`../exported/${layer}.json`);
+        const fileResponse = await fetch(`/exported/${layer}.json`);
         const fileData = await fileResponse.json();
         return fileData;
       } catch (error) {
@@ -50,7 +50,7 @@ useEffect(()=>{
   useEffect(() => {
     // Call the fetchData function when the component mounts
     const fetchConfig = async (setter: Dispatch<SetStateAction<string[]>>) => {
-      const configResponse = await fetch(`../exported/config.json`);
+      const configResponse = await fetch(`/exported/config.json`);
       const config = await configResponse.json();
       setter(config);
     };
