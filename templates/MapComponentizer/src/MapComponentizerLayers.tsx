@@ -3,7 +3,6 @@ import {
   LayerList,
   LayerListItem,
   MlGeoJsonLayer,
-  MlMeasureTool,
   MlWmsLayer,
   Sidebar,  
   useMap,
@@ -18,6 +17,7 @@ import MapComponentizerToolBar from "./utils/MapComponentizerToolBar";
 import LayersIcon from "@mui/icons-material/Layers";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import MlFeatureInfo from "./MlFeatureInfo";
+import MeasureTool from "./MeasureTool";
 
 
 const MapComponentizerLayers = () => {
@@ -89,8 +89,7 @@ const MapComponentizerLayers = () => {
               }
             })}
         </LayerList>
-
-        {showMeasureTool && <MlMeasureTool />}
+        {showMeasureTool && <MeasureTool />}
         <MlFeatureInfo layers={context.config?.order} />
       </Sidebar>
     </>
