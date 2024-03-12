@@ -107,6 +107,7 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         # Get the project instance
         project = QgsProject.instance()
         feedback.pushInfo(project.absolutePath())
+        
 
         # Load test project
         # project.read(f'{plugin_path}/testdata/testProject.qgs')
@@ -147,7 +148,7 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         elif platform.system() == 'Windows':    # Windows
             os.startfile(bashPath)
         else:                                   # linux variants
-            result = subprocess.run(['bash', bashPath])
+            result = subprocess.run([bashPath])
 
             if result.returncode == 0:
                 feedback.pushInfo("Bash script executed successfully")
@@ -155,7 +156,8 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
                 feedback.pushInfo(f"Error executing Bash script. Return code: {result.returncode}")
 
         shutil.rmtree(TEMP_DIRECTORY)
-        os.mkdir(TEMP_DIRECTORY)
+        os.mkdir(TEMP_DIRECTORY)        
+        
 
     #subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}')
 

@@ -51,7 +51,7 @@ class LayersExporter:
                                 name = thisLayer.name()                               
                                 config = {"name": name,                                        
                                         "visible": self.is_layer_visible(project, thisLayer),
-                                        "geomType": self.getVectorLayerType(geojson),
+                                        "geomType": self.getVectorLayerType(thisLayer),
                                         "paint": json.loads(layerStyleAsMapbox(thisLayer)[0]),   
                                         "type": "geojson",
                                         "geojson": json.loads(geojson)                   
@@ -115,18 +115,17 @@ class LayersExporter:
             return True
     
     @classmethod
-    def getVectorLayerType(self, geojson):
-        try:
-            jsonData = json.loads(geojson)
-            geomType = jsonData["features"][0]["geometry"]["type"] 
-            
-            if geomType in ["Polygon", "MultiPolygon"]:
-                return "fill"
-            elif geomType in ["LineString", "MultiLineString"]:
-                return "line"
-            elif geomType == "Point":
-                return "circle"
-            else:
-                return None 
-        except:
-            return "circle" 
+    def getVectorLayerType(self, layer: QgsVectorLayer):
+             
+        if layer.wkbType() == 1:
+            print(layer.name(), "is a point layer")
+            return "cricle"
+        elif layer.wkbType() == 2:
+            print(layer.name(), "is a line layer")
+            return "line"
+        elif layer.wkbType() == 3:
+            print(layer.name(), "is a polygon layer")
+            return "fill"
+        else:
+            print(layer.name(), "has another type of geometry")
+            return None
