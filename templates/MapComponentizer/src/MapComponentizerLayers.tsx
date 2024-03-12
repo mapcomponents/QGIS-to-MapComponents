@@ -15,6 +15,7 @@ import {Button} from '@mui/material';
 import MapComponentizerToolBar from "./utils/MapComponentizerToolBar";
 import LayersIcon from '@mui/icons-material/Layers';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import MlFeatureInfo from "./MlFeatureInfo";
  
 const MapComponentizerLayers = () => {
 
@@ -83,6 +84,7 @@ const tools = [{icon: <LayersIcon />, action: ()=> setOpen(!open)}, {icon: <Stra
         </LayerList>
 
         {showMeasureTool && <MlMeasureTool/>}
+        <MlFeatureInfo layers={context.layers.map(el => el.name)} />
       </Sidebar>     
     </>
   );
