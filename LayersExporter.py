@@ -43,7 +43,7 @@ class LayersExporter:
     def export_layer(self, project: QgsProject, thisLayer: QgsMapLayer, outputFolder: str, feedback:  QgsProcessingFeedback):
        
         try: 
-            if thisLayer.type() == QgsMapLayerType.VectorLayer:                     
+            if thisLayer.type() == QgsMapLayerType.VectorLayer:                                   
                 # the new list is looped and the vector layer with supported geomtrie exported as geojson:
                 if thisLayer.crs().authid() == 'EPSG:4326':
                                             
@@ -53,7 +53,7 @@ class LayersExporter:
                                     name = thisLayer.name()                               
                                     config = {"name": name,                                        
                                             "visible": self.is_layer_visible(project, thisLayer),
-                                            "geomType": self.getVectorLayerType(thisLayer),
+                                            "geomType": self.getVectorLayerType(thisLayer, feedback),
                                             "paint": json.loads(layerStyleAsMapbox(thisLayer)[0]),   
                                             "type": "geojson",
                                             "geojson": json.loads(geojson)                   
@@ -117,7 +117,7 @@ class LayersExporter:
             return True
     
     @classmethod
-    def getVectorLayerType(self, layer: QgsVectorLayer):
+    def getVectorLayerType(self, layer: QgsVectorLayer, feedback: QgsProcessingFeedback):
              
         if layer.wkbType() == 1:
             print(layer.name(), "is a point layer")
