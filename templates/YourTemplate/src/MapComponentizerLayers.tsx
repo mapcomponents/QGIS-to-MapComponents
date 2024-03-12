@@ -5,7 +5,8 @@ import {
   MlGeoJsonLayer,
   MlMeasureTool,
   MlWmsLayer,
-  Sidebar,  
+  Sidebar,
+  TopToolbar,
   useMap,
 } from "@mapcomponents/react-maplibre";
 import { MapComponentizerContext } from "./MapComponentizerContext";
@@ -14,17 +15,18 @@ import {
   getPaintProp,
   getprojectExtent,
 } from "./utils/MapComponentizerUtils";
+import { Button } from "@mui/material";
 import MapComponentizerToolBar from "./utils/MapComponentizerToolBar";
 import LayersIcon from "@mui/icons-material/Layers";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import MlFeatureInfo from "./MlFeatureInfo";
-
+import InfoIcon from '@mui/icons-material/Info';
 
 const MapComponentizerLayers = () => {
   const context = useContext(MapComponentizerContext) as any;
   const [open, setOpen] = useState(true);
   const [showMeasureTool, setShowMeasureTool] = useState(false);
-
+  const [featureInfoLayers, setFeatureInfoLayers] = useState<string[]>([]);
   const mapHook = useMap({
     mapId: undefined,
   });
@@ -37,7 +39,10 @@ const MapComponentizerLayers = () => {
       action: () => setShowMeasureTool(!showMeasureTool),
     },
   ];
-
+  
+  useEffect(()=>{
+    context?.config?.order && setFeatureInfoLayers(context.config.order)
+      }, [context.config])
 
   return (
     <>
@@ -66,7 +71,32 @@ const MapComponentizerLayers = () => {
                           labelProp={"_"}
                           labelOptions={getLabels(layer)}
                         />
-                      }                     
+                      }
+                      buttons={
+                        <InfoIcon 
+                        sx={{color: (theme)=> featureInfoLayers.indexOf(layer.name) !== -1
+                                ? theme.palette.primary.main
+                                : "lightgray"                              
+                        }}
+                          onClick={() => {
+                            setFeatureInfoLayers((current) => {
+                              const currentTmp = [...current];
+
+                              if (current.indexOf(layer.name) !== -1) {
+                                currentTmp.splice(
+                                  currentTmp.indexOf(layer.name),
+                                  1
+                                );
+                              }else{
+                                currentTmp.push(layer.name)
+                              }
+                              return currentTmp;
+                            });
+                          }}
+                        >
+                          i
+                        </InfoIcon>
+                      }
                     />
                   );
                 case "wms":
@@ -91,7 +121,7 @@ const MapComponentizerLayers = () => {
         </LayerList>
 
         {showMeasureTool && <MlMeasureTool />}
-        <MlFeatureInfo layers={context.config?.order} />
+        <MlFeatureInfo layers={featureInfoLayers} />
       </Sidebar>
     </>
   );
