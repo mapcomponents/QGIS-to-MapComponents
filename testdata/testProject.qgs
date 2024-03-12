@@ -41,7 +41,7 @@
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer legend_exp="" name="CA_counties" legend_split_behavior="0" providerKey="ogr" source="../../../../../../../../../../Dokumente/mapComponents/QGIS-MapComponentizer-plugin/testdata/CA_counties.geojson|geometrytype=Polygon|uniqueGeometryType=yes" id="CA_counties_b2124c77_f515_4a7e_aac3_c938f1dacd89" expanded="1" patch_size="-1,-1" checked="Qt::Checked">
+    <layer-tree-layer legend_exp="" name="CA_counties" legend_split_behavior="0" providerKey="ogr" source="./CA_counties.geojson|geometrytype=Polygon|uniqueGeometryType=yes" id="CA_counties_b2124c77_f515_4a7e_aac3_c938f1dacd89" expanded="1" patch_size="-1,-1" checked="Qt::Checked">
       <customproperties>
         <Option/>
       </customproperties>
@@ -745,7 +745,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>83.13654909303014051</ymax>
       </wgs84extent>
       <id>CA_counties_b2124c77_f515_4a7e_aac3_c938f1dacd89</id>
-      <datasource>../../../../../../../../../../Dokumente/mapComponents/QGIS-MapComponentizer-plugin/testdata/CA_counties.geojson|geometrytype=Polygon|uniqueGeometryType=yes</datasource>
+      <datasource>./CA_counties.geojson|geometrytype=Polygon|uniqueGeometryType=yes</datasource>
       <keywordList>
         <value></value>
       </keywordList>
