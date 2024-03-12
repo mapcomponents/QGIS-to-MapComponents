@@ -104,22 +104,11 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         BASE_OUTPUT_DIRECTORY = parameters[self.OUTPUT]
         TEMP_DIRECTORY = f'{plugin_path}/tmp'
         TEMPLATE_PATH = f'{plugin_path}/templates/{templateOptions[parameters[self.TEMPLATE]]}'
-        #QGIS_PREFIX_PATH = "/usr/lib/qgis"
-
-        # # get Application path
-        # qgs = QgsApplication([], False)
-        # QgsApplication.setPrefixPath(QGIS_PREFIX_PATH, True)
-        # QgsApplication.initQgis()
-        # for alg in QgsApplication.processingRegistry().algorithms():
-        #     print(alg.id(), "->", alg.displayName())
-
+       
         # Get the project instance
         project = QgsProject.instance()
         feedback.pushInfo(project.absolutePath())
-        
-
-        # Load test project
-        # project.read(f'{plugin_path}/testdata/testProject.qgs')
+       
         projectName = project.baseName()
 
         projectFolder, exportFolder = ProjectUtils.create_project_directory(
@@ -138,41 +127,9 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
             subprocess.Popen(['xdg-open', projectFolder])
 
 
-        # Start dev Server in the new app
-        # only for stand-alone script
-
-        #subprocess.run(['yarn'], cwd=f'{projectFolder}')
-
-        # open dev server in the browser
-        # url = "http://localhost:5173/"
-        # try:
-        #     subprocess.run(['xdg-open', url], check=True)
-        # except subprocess.CalledProcessError as e:
-        #     print(f"Error: {e}")
-
-        # qgs.exitQgis()
-
-    
-        bashPath = f'{projectFolder}/start_dev_server.sh'
-
-
-        if platform.system() == 'Darwin':       # macOS
-            subprocess.call(('open', bashPath))
-        elif platform.system() == 'Windows':    # Windows
-            os.startfile(bashPath)
-        else:                                   # linux variants
-            result = subprocess.run([bashPath])
-
-            if result.returncode == 0:
-                feedback.pushInfo("Bash script executed successfully")
-            else:
-                feedback.pushInfo(f"Error executing Bash script. Return code: {result.returncode}")
-
         shutil.rmtree(TEMP_DIRECTORY)
         os.mkdir(TEMP_DIRECTORY)        
         
-
-    #subprocess.run(['yarn', 'dev'], cwd=f'{projectFolder}')
 
         return {self.OUTPUT: projectFolder}
 

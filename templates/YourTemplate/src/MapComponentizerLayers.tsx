@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import {
   LayerList,
   LayerListItem,
@@ -6,7 +6,6 @@ import {
   MlMeasureTool,
   MlWmsLayer,
   Sidebar,
-  TopToolbar,
   useMap,
 } from "@mapcomponents/react-maplibre";
 import { MapComponentizerContext } from "./MapComponentizerContext";
@@ -15,7 +14,6 @@ import {
   getPaintProp,
   getprojectExtent,
 } from "./utils/MapComponentizerUtils";
-import { Button } from "@mui/material";
 import MapComponentizerToolBar from "./utils/MapComponentizerToolBar";
 import LayersIcon from "@mui/icons-material/Layers";
 import StraightenIcon from "@mui/icons-material/Straighten";
