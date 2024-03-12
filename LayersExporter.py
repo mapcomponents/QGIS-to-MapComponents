@@ -121,7 +121,7 @@ class LayersExporter:
              
         if layer.wkbType() == 1:
             print(layer.name(), "is a point layer")
-            return "cricle"
+            return "circle"
         elif layer.wkbType() == 2:
             print(layer.name(), "is a line layer")
             return "line"
