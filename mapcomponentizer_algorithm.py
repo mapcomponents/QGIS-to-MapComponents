@@ -38,7 +38,7 @@ from qgis.core import (
     QgsProcessingAlgorithm,
     QgsProcessingParameterFolderDestination,
     QgsProcessingParameterEnum,
-    QgsProcessingParameterString,
+    QgsProcessingParameterBoolean,
     QgsProject
 )
 import subprocess
@@ -62,6 +62,7 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
     TEMPLATE = 'TEMPLATE'
     plugin_path = os.path.dirname(os.path.realpath(__file__))
     templatesPath = f'{plugin_path}/templates'
+    OPEN = 'OPEN'
 
     def initAlgorithm(self, config):
         """
@@ -83,6 +84,14 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
                 options=self.get_folder_names(self.templatesPath),
                 defaultValue=0,
                 optional=False)
+        )
+
+        self.addParameter(
+            QgsProcessingParameterBoolean(
+            self.OPEN,
+            self.tr('Open export folder when finished:'),
+            True
+            )
         )
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -124,6 +133,10 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
 
         # Create the MapComponents project using the selected template
         shutil.copytree(TEMPLATE_PATH, f'{projectFolder}', dirs_exist_ok=True)
+
+        if parameters[self.OPEN]: 
+            subprocess.Popen(['xdg-open', projectFolder])
+
 
         # Start dev Server in the new app
         # only for stand-alone script
