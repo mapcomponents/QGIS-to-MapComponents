@@ -19,7 +19,7 @@ class ProjectUtils:
             counter += 1
 
         # Create the project directory        
-        os.mkdir(directory)
+        os.makedirs(directory, exist_ok=True)
         print(f'Directory "{directory}" created successfully.')
         os.mkdir(directory + "/public")
         exportFolder = directory + "/public/exported"

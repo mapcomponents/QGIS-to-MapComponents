@@ -105,10 +105,16 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         TEMP_DIRECTORY = f'{plugin_path}/tmp'
         TEMPLATE_PATH = f'{plugin_path}/templates/{templateOptions[parameters[self.TEMPLATE]]}'
        
-        # Get the project instance
+        #create tmp folder if it doesn't exist, empty it if previously failed to do it
+      
+        shutil.rmtree(TEMP_DIRECTORY)
+        os.makedirs(TEMP_DIRECTORY, exist_ok=True)
+        
+
+        # Get the project instance  
         project = QgsProject.instance()
-               
         projectName = project.baseName()
+        
 
         projectFolder, exportFolder = ProjectUtils.create_project_directory(
             projectName, BASE_OUTPUT_DIRECTORY)
