@@ -89,7 +89,7 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterBoolean(
             self.OPEN,
-            self.tr('Open export folder when finished:'),
+            self.tr('Open export folder when finished'),
             True
             )
         )
@@ -97,7 +97,7 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
 
         # Send some information to the user
-        feedback.pushInfo('Output folder is {}'.format(self.OUTPUT))
+       
         plugin_path = os.path.dirname(os.path.realpath(__file__))
         templateOptions = self.get_folder_names(self.templatesPath)
 
@@ -107,8 +107,7 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
        
         # Get the project instance
         project = QgsProject.instance()
-        feedback.pushInfo(project.absolutePath())
-       
+               
         projectName = project.baseName()
 
         projectFolder, exportFolder = ProjectUtils.create_project_directory(
@@ -126,12 +125,12 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         if parameters[self.OPEN]: 
             subprocess.Popen(['xdg-open', projectFolder])
 
-
+        feedback.pushInfo(f'The project was successfully created in {projectFolder}')
         shutil.rmtree(TEMP_DIRECTORY)
         os.mkdir(TEMP_DIRECTORY)        
         
 
-        return {self.OUTPUT: projectFolder}
+        return {"status": "SUCCESSS" }
 
     def name(self):
 
