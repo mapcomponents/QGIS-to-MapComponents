@@ -119,15 +119,14 @@ class LayersExporter:
     @classmethod
     def getVectorLayerType(self, layer: QgsVectorLayer, feedback: QgsProcessingFeedback):
              
-        if layer.wkbType() == 1:
-            print(layer.name(), "is a point layer")
+        if layer.wkbType() in [1, 4]:         
             return "circle"
-        elif layer.wkbType() == 2:
-            print(layer.name(), "is a line layer")
+        elif layer.wkbType() in [2, 5]:         
             return "line"
-        elif layer.wkbType() == 3:
-            print(layer.name(), "is a polygon layer")
+        elif layer.wkbType() in [3, 6]:          
             return "fill"
-        else:
-            print(layer.name(), "has another type of geometry")
+
+        else:            
+            feedback.pushInfo(f'wkb{layer.wkbType()}')
+
             return None
