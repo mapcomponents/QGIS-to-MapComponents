@@ -1,6 +1,8 @@
 import { MlGeoJsonLayer, useMap } from "@mapcomponents/react-maplibre";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PointLike, MapEventType } from "maplibre-gl";
+import FeatureInfoProps from "./FeatureInfoProps";
+import { Divider, Box, Typography } from '@mui/material';
 
 type Props = {
   layers: string[];
@@ -72,19 +74,14 @@ function MlFeatureInfo(props: Props) {
   }, [props.layers, mapHook]);
 
   return (
-    <div>
-      <h2>MlFeatureInfo</h2>
-      <p>
-        {selectedFeature &&
-          Object.keys(selectedFeature?.properties).map((key) => (
-            <>
-              {key}: {selectedFeature.properties[key]}
-              <br />
-            </>
-          ))}
-      </p>
+    <Box>
+      <Divider sx={{ marginBottom: "20px" }} />
+      <Typography variant={"h6"}>Feature Info</Typography>
+      {selectedFeature && (
+        <FeatureInfoProps selectedFeature={selectedFeature} />
+      )}
       {selectedFeature && <MlGeoJsonLayer geojson={selectedFeature} />}
-    </div>
+    </Box>
   );
 }
 
