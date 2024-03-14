@@ -1586,7 +1586,7 @@ def my_form_open(dialog, layer, feature):
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
         </actionsetting>
-        <actionsetting type="1" shortTitle="JOSM" name="JOSM" icon="/home/malzueta/.local/share/QGIS/QGIS3/profiles/English/python/plugins/QuickOSM/resources/icons/josm_icon.svg" id="{06bb7c2e-7bf4-45a8-ae23-c6452510c02b}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;josm&quot;,&quot;[% &quot;full_id&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
+        <actionsetting type="1" shortTitle="JOSM" name="JOSM" icon="./QuickOSM/resources/icons/josm_icon.svg" id="{06bb7c2e-7bf4-45a8-ae23-c6452510c02b}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;josm&quot;,&quot;[% &quot;full_id&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
@@ -1596,12 +1596,12 @@ def my_form_open(dialog, layer, feature):
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
         </actionsetting>
-        <actionsetting type="1" shortTitle="wikipedia" name="wikipedia" icon="/home/malzueta/.local/share/QGIS/QGIS3/profiles/English/python/plugins/QuickOSM/resources/icons/wikipedia.png" id="{73e01d1d-60cc-48c4-af02-8f9b042155d7}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikipedia&quot;,&quot;[% &quot;wikipedia&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
+        <actionsetting type="1" shortTitle="wikipedia" name="wikipedia" icon="./QuickOSM/resources/icons/wikipedia.png" id="{73e01d1d-60cc-48c4-af02-8f9b042155d7}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikipedia&quot;,&quot;[% &quot;wikipedia&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
         </actionsetting>
-        <actionsetting type="1" shortTitle="wikidata" name="wikidata" icon="/home/malzueta/.local/share/QGIS/QGIS3/profiles/English/python/plugins/QuickOSM/resources/icons/wikidata.png" id="{4718ab5b-47ad-4374-bcd9-7a912e05d683}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikidata&quot;,&quot;[% &quot;wikidata&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
+        <actionsetting type="1" shortTitle="wikidata" name="wikidata" icon="./QuickOSM/resources/icons/wikidata.png" id="{4718ab5b-47ad-4374-bcd9-7a912e05d683}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikidata&quot;,&quot;[% &quot;wikidata&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
@@ -5975,7 +5975,7 @@ def my_form_open(dialog, layer, feature):
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
         </actionsetting>
-        <actionsetting type="1" shortTitle="JOSM" name="JOSM" icon="/home/malzueta/.local/share/QGIS/QGIS3/profiles/English/python/plugins/QuickOSM/resources/icons/josm_icon.svg" id="{06bb7c2e-7bf4-45a8-ae23-c6452510c02b}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;josm&quot;,&quot;[% &quot;full_id&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
+        <actionsetting type="1" shortTitle="JOSM" name="JOSM" icon="./plugins/QuickOSM/resources/icons/josm_icon.svg" id="{06bb7c2e-7bf4-45a8-ae23-c6452510c02b}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;josm&quot;,&quot;[% &quot;full_id&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
@@ -5985,12 +5985,12 @@ def my_form_open(dialog, layer, feature):
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
         </actionsetting>
-        <actionsetting type="1" shortTitle="wikipedia" name="wikipedia" icon="/home/malzueta/.local/share/QGIS/QGIS3/profiles/English/python/plugins/QuickOSM/resources/icons/wikipedia.png" id="{73e01d1d-60cc-48c4-af02-8f9b042155d7}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikipedia&quot;,&quot;[% &quot;wikipedia&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
+        <actionsetting type="1" shortTitle="wikipedia" name="wikipedia" icon="./QuickOSM/resources/icons/wikipedia.png" id="{73e01d1d-60cc-48c4-af02-8f9b042155d7}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikipedia&quot;,&quot;[% &quot;wikipedia&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
         </actionsetting>
-        <actionsetting type="1" shortTitle="wikidata" name="wikidata" icon="/home/malzueta/.local/share/QGIS/QGIS3/profiles/English/python/plugins/QuickOSM/resources/icons/wikidata.png" id="{4718ab5b-47ad-4374-bcd9-7a912e05d683}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikidata&quot;,&quot;[% &quot;wikidata&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
+        <actionsetting type="1" shortTitle="wikidata" name="wikidata" icon="./QuickOSM/resources/icons/wikidata.png" id="{4718ab5b-47ad-4374-bcd9-7a912e05d683}" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikidata&quot;,&quot;[% &quot;wikidata&quot; %]&quot;)" capture="0" notificationMessage="" isEnabledOnlyWhenEditable="0">
           <actionScope id="Canvas"/>
           <actionScope id="Feature"/>
           <actionScope id="Field"/>
