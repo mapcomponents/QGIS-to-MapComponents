@@ -6,7 +6,7 @@ from urllib.parse import urlparse, parse_qs
 class LayersExporter:
 
     @classmethod
-    def reproject_layers(self, project: QgsProject, temporalFolder: str):
+    def reproject_layers(self, project: QgsProject, temporalFolder: str, feedback: QgsProcessingFeedback):
 
         # list of layer names using list comprehension
         l = [layer.name() for layer in project.mapLayers().values()]
@@ -20,23 +20,26 @@ class LayersExporter:
             thisLayer: QgsMapLayer = layers_list[l]
             if thisLayer.type() == QgsMapLayerType.VectorLayer:
                 if thisLayer.crs().authid() != 'EPSG:4326':
-
-                    style_path = f'{temporalFolder}/{thisLayer.name()}.qml'
-                    thisLayer.saveNamedStyle(style_path)
-                   
-                    # Reproject the layer
-                    crs = QgsCoordinateReferenceSystem('EPSG:4326')
-                    reprojected_path = f'{temporalFolder}/{thisLayer.name()}.gpkg'
-                    QgsVectorFileWriter.writeAsVectorFormat(
-                        thisLayer, reprojected_path, 'UTF-8', crs, 'GPKG')
-                    project.removeMapLayer(thisLayer)
-                    # Load the reprojected layer back into the project
-                    reprojected_layer = QgsVectorLayer(
-                    reprojected_path, f'{thisLayer.name()}', 'ogr')
-
-                    reprojected_layer.loadNamedStyle(style_path)                    
-                    project.addMapLayer(reprojected_layer)
+                    try:
+                        style_path = f'{temporalFolder}/{thisLayer.name()}.qml'
+                        thisLayer.saveNamedStyle(style_path)
                     
+                        # Reproject the layer
+                        crs = QgsCoordinateReferenceSystem('EPSG:4326')
+                        reprojected_path = f'{temporalFolder}/{thisLayer.name()}.gpkg'
+                        QgsVectorFileWriter.writeAsVectorFormat(
+                            thisLayer, reprojected_path, 'UTF-8', crs, 'GPKG')
+                      
+
+                        # Load the reprojected layer back into the project
+                        reprojected_layer = QgsVectorLayer(
+                        reprojected_path, f'{thisLayer.name()}', 'ogr')
+                        #project.removeMapLayer(thisLayer)
+                        reprojected_layer.loadNamedStyle(style_path)                    
+                        project.addMapLayer(reprojected_layer)
+
+                    except: 
+                         feedback.pushInfo(f"Layer {thisLayer.name()} could not be reprojected.")    
 
     @classmethod
     
@@ -52,11 +55,14 @@ class LayersExporter:
                                     geojson = exporter.exportFeatures(features)
                                     name = thisLayer.name()                               
                                     config = {"name": name,                                        
+                                            "crs": thisLayer.crs().srsid(),
                                             "visible": self.is_layer_visible(project, thisLayer),
                                             "geomType": self.getVectorLayerType(thisLayer, feedback),
                                             "paint": json.loads(layerStyleAsMapbox(thisLayer)[0]),   
                                             "type": "geojson",
-                                            "geojson": json.loads(geojson)                   
+                                            "geojson": json.loads(geojson),
+                                              
+
                                             }                          
                             
                                     file = open(f'{outputFolder}/{name}.json', 'w')

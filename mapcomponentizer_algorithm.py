@@ -120,7 +120,7 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
             projectName, BASE_OUTPUT_DIRECTORY)
         # export project details and layers
         ProjectUtils.export_project_details(project, exportFolder)
-        LayersExporter.reproject_layers(project, TEMP_DIRECTORY)
+        LayersExporter.reproject_layers(project, TEMP_DIRECTORY, feedback)
 
         for layer in project.mapLayers().values():
             LayersExporter.export_layer(project, layer, exportFolder, feedback)
