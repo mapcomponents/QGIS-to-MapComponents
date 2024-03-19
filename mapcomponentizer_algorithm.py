@@ -105,8 +105,10 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         TEMP_DIRECTORY = f'{plugin_path}/tmp'
         TEMPLATE_PATH = f'{plugin_path}/templates/{templateOptions[parameters[self.TEMPLATE]]}'
        
-        #create tmp folder if it doesn't exist, empty it if previously failed to do it
-      
+    
+
+        #create tmp folder if it doesn't exist, empty it if previously failed to do it      
+        os.makedirs(TEMP_DIRECTORY, exist_ok=True)
         shutil.rmtree(TEMP_DIRECTORY)
         os.makedirs(TEMP_DIRECTORY, exist_ok=True)
         
