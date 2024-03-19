@@ -1,0 +1,14 @@
+output/*
+tmp/*
+
+*shp
+*dbf
+*prj
+*shx
+*cpg
+
+*.gpkg-shm
+*.gpkg-wal
+*.qgs~
+*_reprojected.gpkg
+*.pyc
