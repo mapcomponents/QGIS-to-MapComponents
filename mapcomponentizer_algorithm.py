@@ -125,8 +125,11 @@ class MapComponentizerAlgorithm(QgsProcessingAlgorithm):
         for layer in project.mapLayers().values():
             LayersExporter.export_layer(project, layer, exportFolder, feedback)
 
+        def ignore_paths(directory, contents):
+            return ['node_modules', 'exported']
+        
         # Create the MapComponents project using the selected template
-        shutil.copytree(TEMPLATE_PATH, f'{projectFolder}', dirs_exist_ok=True)
+        shutil.copytree(TEMPLATE_PATH, f'{projectFolder}', dirs_exist_ok=True, ignore=ignore_paths)
 
         if parameters[self.OPEN]: 
             subprocess.Popen(['xdg-open', projectFolder])

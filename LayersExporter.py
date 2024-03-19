@@ -60,9 +60,7 @@ class LayersExporter:
                                             "geomType": self.getVectorLayerType(thisLayer, feedback),
                                             "paint": json.loads(layerStyleAsMapbox(thisLayer)[0]),   
                                             "type": "geojson",
-                                            "geojson": json.loads(geojson),
-                                              
-
+                                            "geojson": json.loads(geojson)
                                             }                          
                             
                                     file = open(f'{outputFolder}/{name}.json', 'w')
