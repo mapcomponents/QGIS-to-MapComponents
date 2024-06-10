@@ -52,6 +52,7 @@ The web application resulting from the export is based on the implementation of 
 <img src="img/userDialogue.png" alt="user dialogue"/>
 In the dialog you can choose the template to be used and the destination directory of the web application. In addition, you can select whether the program automatically opens this folder at the end of the process.  
 
+
 4. Once the process is finished, the application can be started in a development environment by executing the following commands in the target folder: 
 
 ```
