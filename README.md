@@ -81,5 +81,5 @@ This project is licensed under the MIT License. See the [LICENSE](./LICENSE) fil
 Thanks to: 
  - the QGIS community for providing the [QGIS Python API](https://qgis.org/pyqgis/3.0/).
  - the developers of [MapComponents](https://github.com/mapcomponents/react-map-components-maplibre) for their React library.
- - to GeoCat for their [bridge-style](https://github.com/GeoCat/bridge-style) Libraray.  
+ - to GeoCat for their [bridge-style](https://github.com/GeoCat/bridge-style) Library.  
  - to the MapLibre Community for their [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) library. 
