@@ -1,10 +1,16 @@
+
+
+<img src="logo.svg" alt="MapComponents" width= 15%/> 
+<img src="img/QGIS_logo.svg" alt="MapComponents" width= 38%/>
+
+# MapComponentizer: a QGIS to MapComponents plugin 
+
+
 <img src="img/cover.webp" alt="QGIS-MapComponentizer"/>
 
-# MapComponentizer: a QGIS to MapComponents plugin
 
-## Description
 MapComponentizer is a Python script that automates the process of exporting a QGIS project to a React-based web mapping application. The algorithm can be installed in QGIS as a Plugin, following the installation instructions in this document. 
-The web application resulting from the export is based on the implementation of the MapComponents library, developed for the React implementation of the [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) library. 
+The web application resulting from the export is based on the implementation of the [MapComponents](https://github.com/mapcomponents/react-map-components-maplibre) library, developed for the React implementation of the [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) library. 
 
 ## Features
 - Export .qgs and .qgz projects.
@@ -38,6 +44,7 @@ The web application resulting from the export is based on the implementation of 
 2. Load the project you want to export.
 3. Run the QGIS to MapComponents script from the QGIS Processing Toolbox (under Mapcomponents group). 
 
+<img src="img/userDialogue.png" alt="user dialogue"/>
 In the dialog you can choose the template to be used and the destination directory of the web application. In addition, you can select whether the program automatically opens this folder at the end of the process.  
 
 4. Once the process is finished, the application can be started in a development environment by executing the following commands in the target folder: 
