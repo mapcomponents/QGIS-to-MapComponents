@@ -1,7 +1,12 @@
 
 
-<img src="logo.svg" alt="MapComponents" width= 15%/> 
-<img src="img/QGIS_logo.svg" alt="MapComponents" width= 38%/>
+
+
+<p float="left">
+<img src="logo.svg" alt="MapComponents" width= 20%/> 
+<img src="img/QGIS_logo.svg" alt="MapComponents" width= 40%/>
+</p>
+
 
 # MapComponentizer: a QGIS to MapComponents plugin 
 
