@@ -6,7 +6,7 @@
 # MapComponentizer: a QGIS to MapComponents plugin 
 
 
-<img src="img/cover.webp" alt="QGIS-MapComponentizer"/>
+ <!-- <img src="img/cover.webp" alt="QGIS-MapComponentizer"/> -->
 
 
 MapComponentizer is a Python script that automates the process of exporting a QGIS project to a React-based web mapping application. The algorithm can be installed in QGIS as a Plugin, following the installation instructions in this document. 
